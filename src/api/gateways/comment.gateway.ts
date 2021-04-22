@@ -9,19 +9,21 @@ import {
 import { Socket } from 'socket.io';
 
 @WebSocketGateway()
-export class CommentGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class CommentGateway
+  implements OnGatewayConnection, OnGatewayDisconnect {
+  allComments: string[] = [];  // TEMP
   @WebSocketServer() server;
-
   @SubscribeMessage('comment')
-  handleEvent(@MessageBody() data: string): string {
-    console.log('works ' + data);
-    this.server.emit('comments', data);
-    return data + 'boo';
+  handleEvent(@MessageBody() comment: string): string {
+    console.log('works ' + comment);
+    this.allComments.push(comment);
+    this.server.emit('newComment', comment);
+    return comment + 'boo';
   }
 
   handleConnection(client: Socket, ...args: any[]): any {
     console.log('Client Connect', client.id);
-    // client.emit('allMessages', this.chatService.getMessages());
+     client.emit('allComments', this.allComments); // chatService.getMessages());
     // this.server.emit('clients', this.chatService.getClients());
   }
 

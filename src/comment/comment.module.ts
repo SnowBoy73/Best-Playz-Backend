@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { CommentGateway } from './comment.gateway';
+import { CommentGateway } from '../api/gateways/comment.gateway';
 
 @Module({
   providers: [CommentGateway],
