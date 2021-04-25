@@ -28,19 +28,18 @@ export class CommentGateway
     @ConnectedSocket() client: Socket,
   ): void {
     this.commentService.addClient(client.id, nickname);
-    console.log('All nicknames ', this.commentService.clients);
+    console.log('All nicknames ', this.commentService.getClients());
     this.server.emit('clients',this.commentService.getClients());
   }
 
   handleConnection(client: Socket, ...args: any[]): any {
     console.log('Client Connect', client.id);
-    client.emit('allComments', this.commentService.getComments()); // chatService.getMessages());
+    client.emit('allComments', this.commentService.getComments());
     this.server.emit('clients', this.commentService.getClients());
   }
 
   handleDisconnect(client: Socket): any {
-    this.commentService.clients.delete(client.id);
-    // this.chatService.delete(client.id);
+    this.commentService.deleteClient(client.id);
     // this.server.emit('clients', this.chatService.getClients());
     console.log('Client Disconnect', client.id);
   }
