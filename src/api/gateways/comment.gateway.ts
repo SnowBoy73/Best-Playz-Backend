@@ -17,9 +17,12 @@ export class CommentGateway
 
   @WebSocketServer() server;
   @SubscribeMessage('comment')
-  handleCommentEvent(@MessageBody() comment: string): void {
+  handleCommentEvent(
+    @MessageBody() comment: string,
+    @ConnectedSocket() client: Socket,
+  ): void {
     console.log('comment: ' + comment);
-    this.commentService.addComment(comment);
+    this.commentService.addComment(comment, client.id);
     this.server.emit('newComment', comment);
   }
 

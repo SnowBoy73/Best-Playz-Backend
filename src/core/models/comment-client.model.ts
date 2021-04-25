@@ -1,4 +1,4 @@
-export interface ClientComment {
+export interface CommentClient {
   id: string;
   nickname: string;
 }
