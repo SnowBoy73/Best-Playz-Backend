@@ -9,7 +9,6 @@ export class CommentService {
 
   addComment(text: string, clientId: string): CommentModel {
     const ts = Date.now();
-    console.log('time: ', ts);
     const date_ob = new Date(ts);
     const date = date_ob.getDate();
     const month = date_ob.getMonth() + 1;
@@ -17,6 +16,18 @@ export class CommentService {
     const hour = date_ob.getHours();
     const minute = date_ob.getMinutes();
     const second = date_ob.getSeconds();
+    let mthZero = '';
+    if (month < 10) {
+      mthZero = '0';
+    }
+    let dateZero = '';
+    if (date < 10) {
+      dateZero = '0';
+    }
+    let hourZero = '';
+    if (hour < 10) {
+      hourZero = '0';
+    }
     let minZero = '';
     if (minute < 10) {
       minZero = '0';
@@ -25,7 +36,9 @@ export class CommentService {
     if (second < 10) {
       secZero = '0';
     }
-    const sentAt = year + '-' + month + '-' + date + '@' + hour + ':' + minZero + minute + ':' + secZero + second;
+    const sentAt = year + '-' + mthZero + month + '-' + dateZero + date + '@' + hourZero + hour + ':' + minZero + minute + ':' + secZero + second;
+    console.log('time: ', sentAt);
+
     const highscoreId = "1"; // MOCK !!!
     const client = this.clients.find((c) => c.id === clientId);
     const comment: CommentModel =  {highscoreId: highscoreId, text: text, sender: client, posted: sentAt };

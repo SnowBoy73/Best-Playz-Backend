@@ -18,11 +18,11 @@ export class CommentGateway
   @WebSocketServer() server;
   @SubscribeMessage('comment')
   handleCommentEvent(
-    @MessageBody() comment: string,
+    @MessageBody() text: string,
     @ConnectedSocket() client: Socket,
   ): void {
-    console.log('comment: ' + comment);
-    this.commentService.addComment(comment, client.id);
+    console.log('comment: ' + text);
+    const comment = this.commentService.addComment(text, client.id);
     this.server.emit('newComment', comment);
   }
 
