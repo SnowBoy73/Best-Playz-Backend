@@ -31,15 +31,19 @@ export class CommentGateway
   handleLoginEvent(@MessageBody() nickname: string,
     @ConnectedSocket() client: Socket,
   ): void {
-    const commentClient = this.commentService.addClient(client.id, nickname);
+    try {
+      const commentClient = this.commentService.addClient(client.id, nickname);
+      const welcome: WelcomeDto = {
+        clients: this.commentService.getClients(),
+        client: commentClient,
+        comments: this.commentService.getComments()}
+      console.log('All nicknames ', this.commentService.getClients());
+      client.emit('welcome', welcome);
+      this.server.emit('clients',this.commentService.getClients());
+    } catch (e) {
+      client.error(e);
+    }
 
-    const welcome: WelcomeDto = {
-      clients: this.commentService.getClients(),
-      client: commentClient,
-      comments: this.commentService.getComments()}
-    console.log('All nicknames ', this.commentService.getClients());
-    client.emit('welcome', welcome);
-    this.server.emit('clients',this.commentService.getClients());
   }
 
   handleConnection(client: Socket, ...args: any[]): any {

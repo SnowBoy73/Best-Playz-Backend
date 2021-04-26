@@ -47,7 +47,14 @@ export class CommentService {
   }
 
   addClient(id: string, nickname: string): CommentClient {
-    const commentClient: CommentClient = {id: id, nickname: nickname};
+    let commentClient = this.clients.find((c) => c.nickname === nickname && c.id ===id);
+    if (commentClient) {
+      return commentClient;
+    }
+    if (this.clients.find((c) => c.nickname === nickname)) {
+      throw new Error('Nickname already inuse');
+    }
+    commentClient = { id: id, nickname: nickname };
     this.clients.push(commentClient);
     return commentClient;
   }
