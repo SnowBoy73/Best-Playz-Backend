@@ -9,6 +9,7 @@ import {
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { CommentService } from '../../core/services/comment.service';
+import { WelcomeDto } from "../dtos/welcome.dto";
 
 @WebSocketGateway()
 export class CommentGateway
@@ -30,8 +31,14 @@ export class CommentGateway
   handleLoginEvent(@MessageBody() nickname: string,
     @ConnectedSocket() client: Socket,
   ): void {
-    this.commentService.addClient(client.id, nickname);
+    const commentClient = this.commentService.addClient(client.id, nickname);
+
+    const welcome: WelcomeDto = {
+      clients: this.commentService.getClients(),
+      client: commentClient,
+      comments: this.commentService.getComments()}
     console.log('All nicknames ', this.commentService.getClients());
+    client.emit('welcome', welcome);
     this.server.emit('clients',this.commentService.getClients());
   }
 

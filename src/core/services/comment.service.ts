@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { CommentClient } from "../models/comment-client.model";
-import { CommentModel } from "../models/comment.model";
+import { Comment } from "../models/comment";
 
 @Injectable()
 export class CommentService {
-  allComments: CommentModel[] = []; // TEMP
+  allComments: Comment[] = []; // TEMP
   clients: CommentClient[] = [];
 
-  addComment(text: string, clientId: string): CommentModel {
+  addComment(text: string, clientId: string): Comment {
     const ts = Date.now();
     const date_ob = new Date(ts);
     const date = date_ob.getDate();
@@ -41,20 +41,22 @@ export class CommentService {
 
     const highscoreId = "1"; // MOCK !!!
     const client = this.clients.find((c) => c.id === clientId);
-    const comment: CommentModel =  {highscoreId: highscoreId, text: text, sender: client, posted: sentAt };
+    const comment: Comment =  {highscoreId: highscoreId, text: text, sender: client, posted: sentAt };
     this.allComments.push(comment);
     return comment;
   }
 
-  addClient(id: string, nickname: string): void {
-    this.clients.push({id: id, nickname: nickname});
+  addClient(id: string, nickname: string): CommentClient {
+    const commentClient: CommentClient = {id: id, nickname: nickname};
+    this.clients.push(commentClient);
+    return commentClient;
   }
 
   getClients() {
     return this.clients;
   }
 
-  getComments(): CommentModel[] {
+  getComments(): Comment[] {
     return this.allComments;
   }
 

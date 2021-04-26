@@ -1,6 +1,6 @@
 import {CommentClient} from "./comment-client.model";
 
-export interface CommentModel {
+export interface Comment {
   // id: string;  // ???
   highscoreId: string;  // highscoreClient??
   text: string;
