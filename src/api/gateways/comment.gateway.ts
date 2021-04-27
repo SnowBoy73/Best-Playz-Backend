@@ -10,11 +10,13 @@ import {
 import { Socket } from 'socket.io';
 import { CommentService } from '../../core/services/comment.service';
 import { WelcomeDto } from "../dtos/welcome.dto";
+import { Inject } from "@nestjs/common";
+import { ICommentService, ICommentServiceProvider } from "../../core/primary-ports/comment.service.interface";
 
 @WebSocketGateway()
 export class CommentGateway
   implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private commentService: CommentService) {}
+  constructor(@Inject(ICommentServiceProvider) private commentService: ICommentService) {}
 
   @WebSocketServer() server;
   @SubscribeMessage('comment')
@@ -41,7 +43,7 @@ export class CommentGateway
       client.emit('welcome', welcome);
       this.server.emit('clients',this.commentService.getClients());
     } catch (e) {
-      client.error(e);
+      client.error(e.message);
     }
 
   }

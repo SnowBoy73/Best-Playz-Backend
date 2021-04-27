@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CommentClient } from "../models/comment-client.model";
 import { Comment } from "../models/comment";
+import { ICommentService } from "../primary-ports/comment.service.interface";
 
 @Injectable()
-export class CommentService {
+export class CommentService implements ICommentService {
   allComments: Comment[] = []; // TEMP
   clients: CommentClient[] = [];
 
@@ -52,7 +53,7 @@ export class CommentService {
       return commentClient;
     }
     if (this.clients.find((c) => c.nickname === nickname)) {
-      throw new Error('Nickname already inuse');
+      throw new Error('Nickname is already in use');
     }
     commentClient = { id: id, nickname: nickname };
     this.clients.push(commentClient);
