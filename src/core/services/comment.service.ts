@@ -5,6 +5,7 @@ import { ICommentService } from '../primary-ports/comment.service.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommentEntity } from '../../infrastructure/data-source/entities/comment.entity';
 import { Repository } from 'typeorm';
+import { ClientEntity } from '../../infrastructure/data-source/entities/client.entity';
 
 @Injectable()
 export class CommentService implements ICommentService {
@@ -14,6 +15,8 @@ export class CommentService implements ICommentService {
   constructor(
     @InjectRepository(CommentEntity)
     private commentRepository: Repository<CommentEntity>,
+    @InjectRepository(ClientEntity)
+    private clientRepository: Repository<ClientEntity>,
   ) {}
 
   addComment(text: string, clientId: string): Comment {
@@ -87,8 +90,11 @@ export class CommentService implements ICommentService {
       throw new Error('Nickname is already in use');
     }
     commentClient = { id: id, nickname: nickname };
-    this.clients.push(commentClient);
-    return commentClient;
+    // this.clients.push(commentClient);
+    // return commentClient;
+    const client = this.clientRepository.create();
+    client.nickname = nickname;
+    this.clientRepository.save(client);
   }
 
   getClients() {

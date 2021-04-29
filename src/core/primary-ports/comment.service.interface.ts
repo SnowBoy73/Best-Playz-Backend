@@ -1,5 +1,5 @@
-import { CommentClient } from "../models/comment-client.model";
-import { Comment} from "../models/comment";
+import { CommentClient } from '../models/comment-client.model';
+import { Comment } from '../models/comment';
 
 export const ICommentServiceProvider = 'ICommentServiceProvider';
 export interface ICommentService {
