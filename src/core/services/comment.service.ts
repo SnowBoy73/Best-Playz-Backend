@@ -2,11 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { CommentClient } from '../models/comment-client.model';
 import { Comment } from '../models/comment';
 import { ICommentService } from '../primary-ports/comment.service.interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CommentEntity } from '../../infrastructure/data-source/entities/comment.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CommentService implements ICommentService {
   allComments: Comment[] = []; // TEMP
   clients: CommentClient[] = [];
+
+  constructor(
+    @InjectRepository(CommentEntity)
+    private commentRepository: Repository<CommentEntity>,
+  ) {}
 
   addComment(text: string, clientId: string): Comment {
     const ts = Date.now();
