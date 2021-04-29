@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { Client} from "../entities/client.entity";
-import { Comment} from "../entities/comment.entity";
+import { ClientEntity} from "../entities/client.entity";
+import { CommentEntity} from "../entities/comment.entity";
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { Comment} from "../entities/comment.entity";
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [Comment, Client],
+        entities: [CommentEntity, ClientEntity],
         synchronize: true, //false for PRODUCTION
       })
     }),
