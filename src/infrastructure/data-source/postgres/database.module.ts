@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { ClientEntity} from "../entities/client.entity";
-import { CommentEntity} from "../entities/comment.entity";
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ClientEntity } from '../entities/client.entity';
+import { CommentEntity } from '../entities/comment.entity';
 
 @Module({
   imports: [
@@ -17,8 +17,9 @@ import { CommentEntity} from "../entities/comment.entity";
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
         entities: [CommentEntity, ClientEntity],
-        synchronize: true, //false for PRODUCTION
-      })
+        synchronize: true, // false for PRODUCTION
+      }),
     }),
-  ]})
+  ],
+})
 export class DatabaseModule {}

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { CommentClient } from "../models/comment-client.model";
-import { Comment } from "../models/comment";
-import { ICommentService } from "../primary-ports/comment.service.interface";
+import { CommentClient } from '../models/comment-client.model';
+import { Comment } from '../models/comment';
+import { ICommentService } from '../primary-ports/comment.service.interface';
 
 @Injectable()
 export class CommentService implements ICommentService {
@@ -37,18 +37,41 @@ export class CommentService implements ICommentService {
     if (second < 10) {
       secZero = '0';
     }
-    const sentAt = year + '-' + mthZero + month + '-' + dateZero + date + '@' + hourZero + hour + ':' + minZero + minute + ':' + secZero + second;
+    const sentAt =
+      year +
+      '-' +
+      mthZero +
+      month +
+      '-' +
+      dateZero +
+      date +
+      '@' +
+      hourZero +
+      hour +
+      ':' +
+      minZero +
+      minute +
+      ':' +
+      secZero +
+      second;
     console.log('time: ', sentAt);
 
-    const highscoreId = "1"; // MOCK !!!
+    const highscoreId = '1'; // MOCK !!!
     const client = this.clients.find((c) => c.id === clientId);
-    const comment: Comment =  {highscoreId: highscoreId, text: text, sender: client, posted: sentAt };
+    const comment: Comment = {
+      highscoreId: highscoreId,
+      text: text,
+      sender: client,
+      posted: sentAt,
+    };
     this.allComments.push(comment);
     return comment;
   }
 
   addClient(id: string, nickname: string): CommentClient {
-    let commentClient = this.clients.find((c) => c.nickname === nickname && c.id ===id);
+    let commentClient = this.clients.find(
+      (c) => c.nickname === nickname && c.id === id,
+    );
     if (commentClient) {
       return commentClient;
     }
