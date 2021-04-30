@@ -9,8 +9,8 @@ import {
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { CommentService } from '../../core/services/comment.service';
-import { WelcomeDto } from "../dtos/welcome.dto";
-import { Inject } from "@nestjs/common";
+import { WelcomeDto } from '../dtos/welcome.dto';
+import { Inject } from '@nestjs/common';
 import { ICommentService, ICommentServiceProvider } from "../../core/primary-ports/comment.service.interface";
 
 @WebSocketGateway()
@@ -20,43 +20,52 @@ export class CommentGateway
 
   @WebSocketServer() server;
   @SubscribeMessage('comment')
-  handleCommentEvent(
+  async handleCommentEvent(
     @MessageBody() text: string,
     @ConnectedSocket() client: Socket,
-  ): void {
+  ): Promise<void> { // Return Comment to controller for REST api
     console.log('comment: ' + text);
-    const comment = this.commentService.addComment(text, client.id);
-    this.server.emit('newComment', comment);
+    try {
+      const comment = await this.commentService.addComment(text, client.id);
+      const comments = await this.commentService.getClients();
+      this.server.emit('newComment', comment);
+    } catch (e) {
+      client.error(e.message);
+    }
   }
 
   @SubscribeMessage('login')
-  handleLoginEvent(@MessageBody() nickname: string,
+  async handleLoginEvent(
+    @MessageBody() nickname: string,
     @ConnectedSocket() client: Socket,
-  ): void {
+  ): Promise<void> { // Return CommentClient to controller for REST api
     try {
-      const commentClient = this.commentService.addClient(client.id, nickname);
+      const commentClient = await this.commentService.addClient(client.id, nickname);
+      const commentClients = await this.commentService.getClients();
+      const allComments = await this.commentService.getComments();
       const welcome: WelcomeDto = {
-        clients: this.commentService.getClients(),
+        clients: commentClients,
         client: commentClient,
-        comments: this.commentService.getComments()}
-      console.log('All nicknames ', this.commentService.getClients());
+        comments: allComments,
+      };
+      console.log('All nicknames ', commentClients);
       client.emit('welcome', welcome);
-      this.server.emit('clients',this.commentService.getClients());
+      this.server.emit('clients', commentClients);
     } catch (e) {
       client.error(e.message);
     }
 
   }
 
-  handleConnection(client: Socket, ...args: any[]): any {
+  async handleConnection(client: Socket, ...args: any[]): Promise<any> {
     console.log('Client Connect', client.id);
     client.emit('allComments', this.commentService.getComments());
-    this.server.emit('clients', this.commentService.getClients());
+    this.server.emit('clients', await this.commentService.getClients());
   }
 
-  handleDisconnect(client: Socket): any {
-    this.commentService.deleteClient(client.id);
-    // this.server.emit('clients', this.chatService.getClients());
+  async handleDisconnect(client: Socket): Promise<any> {
     console.log('Client Disconnect', client.id);
+    await this.commentService.deleteClient(client.id);
+    this.server.emit('clients', await this.commentService.getClients());
   }
 }

@@ -12,7 +12,7 @@ export class CommentEntity {
   public text: string;
 
   @Column()
-  public sender: string; // Maybe a Client entity??
+  public sender: string; // Was a Client entity in Comment. BAD
 
   @Column()
   public posted: string;

@@ -3,13 +3,13 @@ import { Comment } from '../models/comment';
 
 export const ICommentServiceProvider = 'ICommentServiceProvider';
 export interface ICommentService {
-  addComment(text: string, clientId: string): Comment;
+  addComment(text: string, clientId: string): Promise<Comment>;
 
-  addClient(id: string, nickname: string): CommentClient;
+  addClient(id: string, nickname: string): Promise<CommentClient>;
 
-  getClients(): CommentClient[];
+  getClients(): Promise<CommentClient[]>;
 
-  getComments(): Comment[];
+  getComments(): Promise<Comment[]>;
 
-  deleteClient(id: string): void;
+  deleteClient(id: string): Promise<void>;
 }

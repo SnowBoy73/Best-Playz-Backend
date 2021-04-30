@@ -1,9 +1,9 @@
-import {CommentClient} from "./comment-client.model";
+import { CommentClient } from './comment-client.model';
 
 export interface Comment {
-  // id: string;  // ???
+  id: string;
   highscoreId: string;  // highscoreClient??
   text: string;
-  sender: CommentClient;
+  sender: string;
   posted: string;
 }

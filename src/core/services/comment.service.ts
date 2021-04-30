@@ -19,7 +19,7 @@ export class CommentService implements ICommentService {
     private clientRepository: Repository<ClientEntity>,
   ) {}
 
-  addComment(text: string, clientId: string): Comment {
+  async addComment(text: string, clientId: string): Promise<Comment> {
     const ts = Date.now();
     const date_ob = new Date(ts);
     const date = date_ob.getDate();
@@ -69,43 +69,65 @@ export class CommentService implements ICommentService {
 
     const highscoreId = '1'; // MOCK !!!
     const client = this.clients.find((c) => c.id === clientId);
-    const comment: Comment = {
+    /*const comment: Comment = {
       highscoreId: highscoreId,
       text: text,
       sender: client,
       posted: sentAt,
+    };*/
+    // this.allComments.push(comment);
+    // return comment;
+    let comment = this.commentRepository.create();
+    // ID???
+    comment.highscoreId = highscoreId;
+    comment.text = text;
+    comment.sender = clientId; // Maybe id, but is currently a number.
+    comment.posted = sentAt;
+    comment = await this.commentRepository.save(comment);
+
+    console.log('added comment', comment);
+    console.log('added comment id', comment.id);
+    // const returnComment: Comment =
+    return {
+      id: '' + comment.id,
+      highscoreId: comment.highscoreId,
+      text: comment.text,
+      sender: client.nickname,
+      posted: comment.posted,
     };
-    this.allComments.push(comment);
-    return comment;
+    //return returnComment;
   }
 
-  addClient(id: string, nickname: string): CommentClient {
-    let commentClient = this.clients.find(
-      (c) => c.nickname === nickname && c.id === id,
-    );
-    if (commentClient) {
-      return commentClient;
+  async addClient(id: string, nickname: string): Promise<CommentClient> {
+    console.log('id: ', id, 'nickname ', nickname);
+    const clientDB = await this.clientRepository.findOne({ nickname: nickname})
+    if (!clientDB) {
+      let client = this.clientRepository.create();
+      client.id = id;
+      client.nickname = nickname;
+      client = await this.clientRepository.save(client);
+      return { id: '' + client.id, nickname: client.nickname }; // maybe
     }
-    if (this.clients.find((c) => c.nickname === nickname)) {
-      throw new Error('Nickname is already in use');
+    if (clientDB.id === id) {
+      return { id: '' + clientDB.id, nickname: clientDB.nickname };
+    } else {
+      throw new Error(' Nickname already used');
     }
-    commentClient = { id: id, nickname: nickname };
-    // this.clients.push(commentClient);
-    // return commentClient;
-    const client = this.clientRepository.create();
-    client.nickname = nickname;
-    this.clientRepository.save(client);
   }
 
-  getClients() {
-    return this.clients;
+  async getClients(): Promise<CommentClient[]> {
+    const clients = await this.clientRepository.find();
+    const commentClients: CommentClient[] = JSON.parse(JSON.stringify(clients));
+    return commentClients;
   }
 
-  getComments(): Comment[] {
-    return this.allComments;
+  async getComments(): Promise<Comment[]> {
+    const commentsDB = await this.commentRepository.find();
+    const modelComments: Comment[] = JSON.parse(JSON.stringify(commentsDB));
+    return modelComments;
   }
 
-  deleteClient(id: string): void {
-    this.clients = this.clients.filter((c) => c.id !== id);
+  async deleteClient(id: string): Promise<void> {
+    await this.clientRepository.delete({ id: id });
   }
 }
