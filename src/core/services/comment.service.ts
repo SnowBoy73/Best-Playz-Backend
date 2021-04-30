@@ -9,8 +9,6 @@ import { ClientEntity } from '../../infrastructure/data-source/entities/client.e
 
 @Injectable()
 export class CommentService implements ICommentService {
-  allComments: Comment[] = []; // TEMP
-  clients: CommentClient[] = [];
 
   constructor(
     @InjectRepository(CommentEntity)
@@ -29,73 +27,32 @@ export class CommentService implements ICommentService {
     const minute = date_ob.getMinutes();
     const second = date_ob.getSeconds();
     let mthZero = '';
-    if (month < 10) {
-      mthZero = '0';
-    }
+    if (month < 10) mthZero = '0';
     let dateZero = '';
-    if (date < 10) {
-      dateZero = '0';
-    }
+    if (date < 10) dateZero = '0';
     let hourZero = '';
-    if (hour < 10) {
-      hourZero = '0';
-    }
+    if (hour < 10) hourZero = '0';
     let minZero = '';
-    if (minute < 10) {
-      minZero = '0';
-    }
+    if (minute < 10) minZero = '0';
     let secZero = '';
-    if (second < 10) {
-      secZero = '0';
-    }
-    const sentAt =
-      year +
-      '-' +
-      mthZero +
-      month +
-      '-' +
-      dateZero +
-      date +
-      '@' +
-      hourZero +
-      hour +
-      ':' +
-      minZero +
-      minute +
-      ':' +
-      secZero +
-      second;
-    console.log('time: ', sentAt);
-
+    if (second < 10) secZero = '0';
+    const sentAt = year + '-' + mthZero + month + '-' + dateZero + date + '@' + hourZero + hour + ':' + minZero + minute + ':' + secZero + second;
     const highscoreId = '1'; // MOCK !!!
-    const client = this.clients.find((c) => c.id === clientId);
-    /*const comment: Comment = {
-      highscoreId: highscoreId,
-      text: text,
-      sender: client,
-      posted: sentAt,
-    };*/
-    // this.allComments.push(comment);
-    // return comment;
+    const clientDB = await this.clientRepository.findOne({ id: clientId });
+    console.log('added comment client', clientDB);
     let comment = this.commentRepository.create();
-    // ID???
     comment.highscoreId = highscoreId;
     comment.text = text;
-    comment.sender = clientId; // Maybe id, but is currently a number.
+    comment.sender = clientDB.nickname;
     comment.posted = sentAt;
     comment = await this.commentRepository.save(comment);
-
-    console.log('added comment', comment);
-    console.log('added comment id', comment.id);
-    // const returnComment: Comment =
     return {
       id: '' + comment.id,
       highscoreId: comment.highscoreId,
       text: comment.text,
-      sender: client.nickname,
+      sender: clientDB.nickname,
       posted: comment.posted,
     };
-    //return returnComment;
   }
 
   async addClient(id: string, nickname: string): Promise<CommentClient> {
@@ -122,7 +79,7 @@ export class CommentService implements ICommentService {
   }
 
   async getComments(): Promise<Comment[]> {
-    const commentsDB = await this.commentRepository.find();
+    const commentsDB = await this.commentRepository.find(); // later find by HighscoreId
     const modelComments: Comment[] = JSON.parse(JSON.stringify(commentsDB));
     return modelComments;
   }

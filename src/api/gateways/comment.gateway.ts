@@ -5,13 +5,16 @@ import {
   OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
-  WebSocketServer
+  WebSocketServer,
 } from '@nestjs/websockets';
+import {
+  ICommentService,
+  ICommentServiceProvider,
+} from '../../core/primary-ports/comment.service.interface';
 import { Socket } from 'socket.io';
 import { CommentService } from '../../core/services/comment.service';
 import { WelcomeDto } from '../dtos/welcome.dto';
 import { Inject } from '@nestjs/common';
-import { ICommentService, ICommentServiceProvider } from "../../core/primary-ports/comment.service.interface";
 
 @WebSocketGateway()
 export class CommentGateway
@@ -27,7 +30,6 @@ export class CommentGateway
     console.log('comment: ' + text);
     try {
       const comment = await this.commentService.addComment(text, client.id);
-      const comments = await this.commentService.getClients();
       this.server.emit('newComment', comment);
     } catch (e) {
       client.error(e.message);
@@ -40,7 +42,7 @@ export class CommentGateway
     @ConnectedSocket() client: Socket,
   ): Promise<void> { // Return CommentClient to controller for REST api
     try {
-      const commentClient = await this.commentService.addClient(client.id, nickname);
+      const commentClient = await this.commentService.addClient( client.id, nickname);
       const commentClients = await this.commentService.getClients();
       const allComments = await this.commentService.getComments();
       const welcome: WelcomeDto = {
