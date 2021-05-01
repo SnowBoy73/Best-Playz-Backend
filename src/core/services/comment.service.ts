@@ -6,7 +6,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CommentEntity } from '../../infrastructure/data-source/entities/comment.entity';
 import { Repository } from 'typeorm';
 import { ClientEntity } from '../../infrastructure/data-source/entities/client.entity';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class CommentService implements ICommentService {
@@ -61,7 +60,7 @@ export class CommentService implements ICommentService {
     const clientDB = await this.clientRepository.findOne({ nickname: nickname})
     if (!clientDB) {
       let client = this.clientRepository.create();
-      client.id = uuidv4(); // was "id";
+      // client.id = uuidv4(); // was "id";
       client.nickname = nickname;
       client = await this.clientRepository.save(client);
       return { id: '' + client.id, nickname: client.nickname }; // maybe
