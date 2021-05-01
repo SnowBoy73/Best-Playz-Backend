@@ -1,15 +1,15 @@
 import { CommentClient } from '../models/comment-client.model';
-import { Comment } from '../models/comment';
+import { CommentModel } from '../models/comment.model';
 
 export const ICommentServiceProvider = 'ICommentServiceProvider';
 export interface ICommentService {
-  addComment(text: string, clientId: string): Promise<Comment>;
+  addComment(commentModel: CommentModel): Promise<CommentModel>;
 
-  addClient(id: string, nickname: string): Promise<CommentClient>;
+  addClient(commentClient: CommentClient): Promise<CommentClient>;
 
   getClients(): Promise<CommentClient[]>;
 
-  getComments(): Promise<Comment[]>;
+  getComments(): Promise<CommentModel[]>;
 
   deleteClient(id: string): Promise<void>;
 }

@@ -15,21 +15,30 @@ import { Socket } from 'socket.io';
 import { CommentService } from '../../core/services/comment.service';
 import { WelcomeDto } from '../dtos/welcome.dto';
 import { Inject } from '@nestjs/common';
+import { loginDto } from '../dtos/login.dto';
+import { CommentClient } from '../../core/models/comment-client.model';
+import { CommentDto } from "../dtos/comment.dto";
+import { CommentEntity } from "../../infrastructure/data-source/entities/comment.entity";
+import { CommentModel } from "../../core/models/comment.model";
 
 @WebSocketGateway()
 export class CommentGateway
   implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(@Inject(ICommentServiceProvider) private commentService: ICommentService) {}
+  constructor(
+    @Inject(ICommentServiceProvider) private commentService: ICommentService,
+  ) {}
 
   @WebSocketServer() server;
   @SubscribeMessage('comment')
   async handleCommentEvent(
-    @MessageBody() text: string,
+    @MessageBody() commentDto: CommentDto,
     @ConnectedSocket() client: Socket,
-  ): Promise<void> { // Return Comment to controller for REST api
-    console.log('comment: ' + text);
+  ): Promise<void> {
+    // Return CommentModel to controller for REST api
+    console.log( 'comment: ' + commentDto.text + ':  client id: ' + client.id + '  nickname: ' + commentDto.sender);
     try {
-      const comment = await this.commentService.addComment(text, client.id);
+      let comment: CommentModel = JSON.parse(JSON.stringify(commentDto));
+      comment = await this.commentService.addComment(comment);
       this.server.emit('newComment', comment);
     } catch (e) {
       client.error(e.message);
@@ -38,11 +47,13 @@ export class CommentGateway
 
   @SubscribeMessage('login')
   async handleLoginEvent(
-    @MessageBody() nickname: string,
+    @MessageBody() loginCommentClientDto: loginDto,
     @ConnectedSocket() client: Socket,
-  ): Promise<void> { // Return CommentClient to controller for REST api
+  ): Promise<void> {
+    // Return CommentClient to controller for REST api
     try {
-      const commentClient = await this.commentService.addClient( client.id, nickname);
+      let commentClient: CommentClient = JSON.parse(JSON.stringify(loginCommentClientDto));
+      commentClient = await this.commentService.addClient(commentClient);
       const commentClients = await this.commentService.getClients();
       const allComments = await this.commentService.getComments();
       const welcome: WelcomeDto = {
@@ -56,7 +67,6 @@ export class CommentGateway
     } catch (e) {
       client.error(e.message);
     }
-
   }
 
   async handleConnection(client: Socket, ...args: any[]): Promise<any> {
