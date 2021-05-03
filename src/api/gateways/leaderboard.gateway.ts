@@ -16,11 +16,26 @@ import { Inject } from '@nestjs/common';
 
 @WebSocketGateway()
 export class LeaderboardGateway {
+  allHighscores: string[] = [];
   @WebSocketServer() server;
   @SubscribeMessage('highscore')
-  handleHighscoreEvent(@MessageBody() data: string): string {
-    console.log('Leaderboard entry = ' + data);
-    this.server.emit('newHighscore', data);
-    return data + ' Leaderboard';
+  handleHighscoreEvent(@MessageBody() highscore: string): string {
+    console.log('Leaderboard entry = ' + highscore);
+    this.allHighscores.push(highscore);
+    this.server.emit('newHighscore', highscore);
+    return highscore + ' Leaderboard';
+  }
+
+
+  handleConnection(client: Socket, ...args: any[]): any { // Promise<any> {
+    console.log('Leaderboard Client Connect', client.id);
+    client.emit('allComments', this.allHighscores);
+    // this.server.emit('clients', await this.commentService.getClients());
+  }
+
+  async handleDisconnect(client: Socket): Promise<any> {
+    console.log('Leaderboard Client Disconnect', client.id);
+    // await this.commentService.deleteClient(client.id);
+    // this.server.emit('clients', await this.commentService.getClients());
   }
 }

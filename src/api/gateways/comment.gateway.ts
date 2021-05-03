@@ -79,13 +79,13 @@ export class CommentGateway
   }
 
   async handleConnection(client: Socket, ...args: any[]): Promise<any> {
-    console.log('Client Connect', client.id);
+    console.log('Comment Client Connect', client.id);
     client.emit('allComments', this.commentService.getComments());
     this.server.emit('clients', await this.commentService.getClients());
   }
 
   async handleDisconnect(client: Socket): Promise<any> {
-    console.log('Client Disconnect', client.id);
+    console.log('Comment Client Disconnect', client.id);
     await this.commentService.deleteClient(client.id);
     this.server.emit('clients', await this.commentService.getClients());
   }
