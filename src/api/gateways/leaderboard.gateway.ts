@@ -29,13 +29,13 @@ export class LeaderboardGateway {
 
   handleConnection(client: Socket, ...args: any[]): any { // Promise<any> {
     console.log('Leaderboard Client Connect', client.id);
-    client.emit('allComments', this.allHighscores);
+    client.emit('allHighscores', this.allHighscores);
     // this.server.emit('clients', await this.commentService.getClients());
   }
 
   async handleDisconnect(client: Socket): Promise<any> {
     console.log('Leaderboard Client Disconnect', client.id);
-    // await this.commentService.deleteClient(client.id);
+    //  await this.commentService.deleteClient(client.id);
     // this.server.emit('clients', await this.commentService.getClients());
   }
 }
