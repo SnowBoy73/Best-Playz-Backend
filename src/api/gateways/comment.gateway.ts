@@ -17,9 +17,9 @@ import { WelcomeDto } from '../dtos/welcome.dto';
 import { Inject } from '@nestjs/common';
 import { loginDto } from '../dtos/login.dto';
 import { CommentClient } from '../../core/models/comment-client.model';
-import { CommentDto } from "../dtos/comment.dto";
-import { CommentEntity } from "../../infrastructure/data-source/entities/comment.entity";
-import { CommentModel } from "../../core/models/comment.model";
+import { CommentDto } from '../dtos/comment.dto';
+import { CommentEntity } from '../../infrastructure/data-source/entities/comment.entity';
+import { CommentModel } from '../../core/models/comment.model';
 
 @WebSocketGateway()
 export class CommentGateway
@@ -35,7 +35,14 @@ export class CommentGateway
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
     // Return CommentModel to controller for REST api
-    console.log( 'comment: ' + commentDto.text + ':  client id: ' + client.id + '  nickname: ' + commentDto.sender);
+    console.log(
+      'comment: ' +
+        commentDto.text +
+        ':  client id: ' +
+        client.id +
+        '  nickname: ' +
+        commentDto.sender,
+    );
     try {
       let comment: CommentModel = JSON.parse(JSON.stringify(commentDto));
       comment = await this.commentService.addComment(comment);
@@ -52,7 +59,9 @@ export class CommentGateway
   ): Promise<void> {
     // Return CommentClient to controller for REST api
     try {
-      let commentClient: CommentClient = JSON.parse(JSON.stringify(loginCommentClientDto));
+      let commentClient: CommentClient = JSON.parse(
+        JSON.stringify(loginCommentClientDto),
+      );
       commentClient = await this.commentService.addClient(commentClient);
       const commentClients = await this.commentService.getClients();
       const allComments = await this.commentService.getComments();

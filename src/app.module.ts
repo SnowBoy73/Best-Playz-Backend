@@ -3,10 +3,12 @@ import { CommentModule } from './api/comment.module';
 import { CommentService } from './core/services/comment.service';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './infrastructure/data-source/postgres/database.module';
+import { LeaderboardModule } from './api/leaderboard.module';
 import * as Joi from '@hapi/joi';
 
 @Module({
   imports: [
+    LeaderboardModule,
     CommentModule,
     ConfigModule.forRoot({
       validationSchema: Joi.object({
