@@ -5,14 +5,23 @@ import { ICommentServiceProvider } from '../core/primary-ports/comment.service.i
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommentEntity } from '../infrastructure/data-source/entities/comment.entity';
 import { ClientEntity } from '../infrastructure/data-source/entities/client.entity';
+import { ISharedServiceProvider } from '../core/primary-ports/shared.service.interface';
+import { SharedService } from '../core/services/shared.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CommentEntity, ClientEntity])],
+  imports: [
+    TypeOrmModule.forFeature([CommentEntity, ClientEntity]),
+    SharedService, // NEW not working
+  ],
   providers: [
     CommentGateway,
     {
       provide: ICommentServiceProvider,
       useClass: CommentService,
+    },
+    {
+      provide: ISharedServiceProvider,
+      useClass: SharedService,
     },
   ],
 })

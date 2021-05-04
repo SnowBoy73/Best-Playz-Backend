@@ -1,16 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ClientModel } from '../models/client.model';
 import { CommentModel } from '../models/comment.model';
-import { ICommentService } from '../primary-ports/comment.service.interface';
+import { ICommentService, ICommentServiceProvider } from "../primary-ports/comment.service.interface";
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommentEntity } from '../../infrastructure/data-source/entities/comment.entity';
 import { Repository } from 'typeorm';
 import { ClientEntity } from '../../infrastructure/data-source/entities/client.entity';
+import { SharedService } from '../services/shared.service';
+import { ISharedService } from '../primary-ports/shared.service.interface';
 
 @Injectable()
 export class CommentService implements ICommentService {
-
   constructor(
+    // @Inject(SharedService) private sharedService: ISharedService,  // NEW not working
+
     @InjectRepository(CommentEntity)
     private commentRepository: Repository<CommentEntity>,
     @InjectRepository(ClientEntity)
@@ -18,7 +21,7 @@ export class CommentService implements ICommentService {
   ) {}
 
   async addComment(newComment: CommentModel): Promise<CommentModel> {
-    const ts = Date.now();
+    const ts = Date.now(); // move to SharedService - from here...
     const date_ob = new Date(ts);
     const date = date_ob.getDate();
     const month = date_ob.getMonth() + 1;
@@ -37,6 +40,8 @@ export class CommentService implements ICommentService {
     let secZero = '';
     if (second < 10) secZero = '0';
     const sentAt = year + '-' + mthZero + month + '-' + dateZero + date + '@' + hourZero + hour + ':' + minZero + minute + ':' + secZero + second;
+    // ... to here
+    // const sentAt = this.sharedService.generateDateTimeNowString();  // NEW not working
     const highscoreId = '1'; // MOCK !!!
 
     const clientDB = await this.clientRepository.findOne({ nickname: newComment.sender});
@@ -53,14 +58,7 @@ export class CommentService implements ICommentService {
       comment = await this.commentRepository.save(comment);
       const addedComment = JSON.parse(JSON.stringify(comment));
       return addedComment;
-      /*return {
-        id: '' + comment.id,
-        highscoreId: comment.highscoreId,
-        text: comment.text,
-        sender: clientDB.nickname,
-        posted: comment.posted,
-      }; */
-    } // from out com above
+    }
   }
 
   async addClient(commentClient: ClientModel): Promise<ClientModel> {
@@ -77,20 +75,6 @@ export class CommentService implements ICommentService {
     client = await this.clientRepository.save(client);
     const newCommentClient = JSON.parse(JSON.stringify(client));
     return newCommentClient; // maybe
-    /* console.log('id: ', id, 'nickname ', nickname);
-     const clientDB = await this.clientRepository.findOne({ nickname: nickname})
-     if (!clientDB) {
-       let client = this.clientRepository.create();
-       client.nickname = nickname;
-       client = await this.clientRepository.save(client);
-       // const commentClient = JSON.parse(JSON.stringify(client));
-       return { id: '' + client.id, nickname: client.nickname }; // maybe
-     }
-     if (clientDB.id === id) {
-       return { id: '' + clientDB.id, nickname: clientDB.nickname };
-     } else {
-       throw new Error(' Nickname already used');
-     } */
   }
 
   async getClients(): Promise<ClientModel[]> {

@@ -26,6 +26,7 @@ import * as Joi from '@hapi/joi';
   controllers: [],
   providers: [
     /*CommentService*/
-  LeaderboardService],
+    LeaderboardService, // needed??
+  ],
 })
 export class AppModule {}
