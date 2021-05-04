@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CommentClient } from '../models/comment-client.model';
+import { ClientModel } from '../models/client.model';
 import { CommentModel } from '../models/comment.model';
 import { ICommentService } from '../primary-ports/comment.service.interface';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -63,7 +63,7 @@ export class CommentService implements ICommentService {
     } // from out com above
   }
 
-  async addClient(commentClient: CommentClient): Promise<CommentClient> {
+  async addClient(commentClient: ClientModel): Promise<ClientModel> {
     const commentClientFoundById = await this.clientRepository.findOne({ id: commentClient.id});
     if (commentClientFoundById) {
       return JSON.parse(JSON.stringify(commentClientFoundById));
@@ -93,9 +93,9 @@ export class CommentService implements ICommentService {
      } */
   }
 
-  async getClients(): Promise<CommentClient[]> {
+  async getClients(): Promise<ClientModel[]> {
     const clients = await this.clientRepository.find();
-    const commentClients: CommentClient[] = JSON.parse(JSON.stringify(clients));
+    const commentClients: ClientModel[] = JSON.parse(JSON.stringify(clients));
     return commentClients;
   }
 

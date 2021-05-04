@@ -4,6 +4,7 @@ import { CommentService } from './core/services/comment.service';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './infrastructure/data-source/postgres/database.module';
 import { LeaderboardModule } from './api/leaderboard.module';
+import { LeaderboardService } from './core/services/leaderboard.service';
 import * as Joi from '@hapi/joi';
 
 @Module({
@@ -25,6 +26,6 @@ import * as Joi from '@hapi/joi';
   controllers: [],
   providers: [
     /*CommentService*/
-  ],
+  LeaderboardService],
 })
 export class AppModule {}

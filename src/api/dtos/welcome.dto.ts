@@ -1,8 +1,8 @@
-import { CommentClient } from '../../core/models/comment-client.model';
+import { ClientModel } from '../../core/models/client.model';
 import { CommentModel } from '../../core/models/comment.model';
 
 export interface WelcomeDto {
-  clients: CommentClient[];
-  client: CommentClient;
+  clients: ClientModel[];
+  client: ClientModel;
   comments: CommentModel[];
 }

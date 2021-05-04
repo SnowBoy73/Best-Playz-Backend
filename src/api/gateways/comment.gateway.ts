@@ -16,7 +16,7 @@ import { CommentService } from '../../core/services/comment.service';
 import { WelcomeDto } from '../dtos/welcome.dto';
 import { Inject } from '@nestjs/common';
 import { loginDto } from '../dtos/login.dto';
-import { CommentClient } from '../../core/models/comment-client.model';
+import { ClientModel } from '../../core/models/client.model';
 import { CommentDto } from '../dtos/comment.dto';
 import { CommentEntity } from '../../infrastructure/data-source/entities/comment.entity';
 import { CommentModel } from '../../core/models/comment.model';
@@ -57,9 +57,11 @@ export class CommentGateway
     @MessageBody() loginCommentClientDto: loginDto,
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
+    console.log('safari nickname ', loginCommentClientDto.nickname);
+
     // Return CommentClient to controller for REST api
     try {
-      let commentClient: CommentClient = JSON.parse(
+      let commentClient: ClientModel = JSON.parse(
         JSON.stringify(loginCommentClientDto),
       );
       commentClient = await this.commentService.addClient(commentClient);
@@ -86,6 +88,7 @@ export class CommentGateway
 
   async handleDisconnect(client: Socket): Promise<any> {
     console.log('Comment Client Disconnect', client.id);
+    // const disconnectingClient: ClientModel = this.commentService.
     await this.commentService.deleteClient(client.id);
     this.server.emit('clients', await this.commentService.getClients());
   }
