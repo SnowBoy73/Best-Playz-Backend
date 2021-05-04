@@ -14,15 +14,17 @@ import {
 import { Socket } from 'socket.io';
 import { Inject } from '@nestjs/common';
 import { LeaderboardService } from '../../core/services/leaderboard.service';
-import { ILeaderboardServiceProvider } from '../../core/primary-ports/leaderboard.service.interface';
-import { HighscoreDto } from "../dtos/highscore.dto";
-import { CommentModel } from "../../core/models/comment.model";
-import { HighscoreModel } from "../../core/models/highscore.model";
+import {
+  ILeaderboardService,
+  ILeaderboardServiceProvider,
+} from '../../core/primary-ports/leaderboard.service.interface';
+import { HighscoreDto } from '../dtos/highscore.dto';
+import { HighscoreModel } from '../../core/models/highscore.model';
 
 @WebSocketGateway()
 export class LeaderboardGateway {
   constructor(
-    @Inject(ILeaderboardServiceProvider) private leaderboardService: LeaderboardService) {}
+    @Inject(ILeaderboardServiceProvider) private leaderboardService: ILeaderboardService) {}
   @WebSocketServer() server;
   @SubscribeMessage('highscore')
   handleHighscoreEvent(@MessageBody() highscoreDto: HighscoreDto): void {

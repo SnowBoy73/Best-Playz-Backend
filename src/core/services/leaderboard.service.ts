@@ -1,13 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { HighscoreModel } from '../models/highscore.model';
 import { ILeaderboardService } from '../primary-ports/leaderboard.service.interface';
+import { SharedService } from '../services/shared.service';
+import { ISharedService, ISharedServiceProvider } from "../primary-ports/shared.service.interface";
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class LeaderboardService implements ILeaderboardService {
   allHighscores: HighscoreModel[] = [];
 
+  constructor(
+    @Inject(ISharedServiceProvider) private sharedService: ISharedService,  // NEW not working
+  ) /*
+    @InjectRepository(CommentEntity)
+    private highscoreRepository: Repository<HighscoreEntity>,
+  ) */ {}
 
-  addHighscore(highscore: HighscoreModel): void {
+  addHighscore(highscore: HighscoreModel): HighscoreModel {
     const ts = Date.now();  // move to SharedService - from here
     const date_ob = new Date(ts);
     const date = date_ob.getDate();
@@ -32,6 +42,7 @@ export class LeaderboardService implements ILeaderboardService {
     highscore.date = posted;
     console.log( 'HS model: ', highscore.nickname, highscore.score, highscore.date);
     this.allHighscores.push(highscore);
+    return highscore;
   }
 
   getHighScores(): HighscoreModel[] {

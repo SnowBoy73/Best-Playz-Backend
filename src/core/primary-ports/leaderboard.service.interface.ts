@@ -1,4 +1,4 @@
-import { HighscoreModel } from "../models/highscore.model";
+import { HighscoreModel } from '../models/highscore.model';
 
 export const ILeaderboardServiceProvider = 'ILeaderboardServiceProvider';
 export interface ILeaderboardService {

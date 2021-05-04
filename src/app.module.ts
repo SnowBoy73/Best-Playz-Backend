@@ -6,6 +6,7 @@ import { DatabaseModule } from './infrastructure/data-source/postgres/database.m
 import { LeaderboardModule } from './api/leaderboard.module';
 import { LeaderboardService } from './core/services/leaderboard.service';
 import * as Joi from '@hapi/joi';
+import { SharedService } from './core/services/shared.service';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import * as Joi from '@hapi/joi';
   providers: [
     /*CommentService*/
     LeaderboardService, // needed??
+    SharedService, // needed??
   ],
 })
 export class AppModule {}

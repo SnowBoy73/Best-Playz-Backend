@@ -11,7 +11,7 @@ import { SharedService } from '../core/services/shared.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([CommentEntity, ClientEntity]),
-    SharedService, // NEW not working
+    SharedService,  // NEW working
   ],
   providers: [
     CommentGateway,
@@ -19,10 +19,10 @@ import { SharedService } from '../core/services/shared.service';
       provide: ICommentServiceProvider,
       useClass: CommentService,
     },
-    {
+    { // Is this needed??. Not used in GW
       provide: ISharedServiceProvider,
       useClass: SharedService,
-    },
+    }, //
   ],
 })
 export class CommentModule {}

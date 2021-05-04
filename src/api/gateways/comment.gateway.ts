@@ -89,8 +89,8 @@ export class CommentGateway
 
   async handleDisconnect(client: Socket): Promise<any> {
     console.log('Comment Client Disconnect', client.id);
-    // const disconnectingClient: ClientModel = this.commentService.
-    await this.commentService.deleteClient(client.id);
+    // const disconnectingClient: ClientModel = this.
+    // await this.commentService.deleteClient(client.id); // Disconnect error is here!!
     this.server.emit('clients', await this.commentService.getClients());
   }
 }

@@ -7,12 +7,12 @@ import { CommentEntity } from '../../infrastructure/data-source/entities/comment
 import { Repository } from 'typeorm';
 import { ClientEntity } from '../../infrastructure/data-source/entities/client.entity';
 import { SharedService } from '../services/shared.service';
-import { ISharedService } from '../primary-ports/shared.service.interface';
+import { ISharedService, ISharedServiceProvider } from "../primary-ports/shared.service.interface";
 
 @Injectable()
 export class CommentService implements ICommentService {
   constructor(
-    // @Inject(SharedService) private sharedService: ISharedService,  // NEW not working
+    @Inject(ISharedServiceProvider) private sharedService: ISharedService, // NEW working
 
     @InjectRepository(CommentEntity)
     private commentRepository: Repository<CommentEntity>,
@@ -21,7 +21,7 @@ export class CommentService implements ICommentService {
   ) {}
 
   async addComment(newComment: CommentModel): Promise<CommentModel> {
-    const ts = Date.now(); // move to SharedService - from here...
+    /*const ts = Date.now(); // move to SharedService - from here...
     const date_ob = new Date(ts);
     const date = date_ob.getDate();
     const month = date_ob.getMonth() + 1;
@@ -40,8 +40,8 @@ export class CommentService implements ICommentService {
     let secZero = '';
     if (second < 10) secZero = '0';
     const sentAt = year + '-' + mthZero + month + '-' + dateZero + date + '@' + hourZero + hour + ':' + minZero + minute + ':' + secZero + second;
-    // ... to here
-    // const sentAt = this.sharedService.generateDateTimeNowString();  // NEW not working
+    // ... to here*/
+     const sentAt = this.sharedService.generateDateTimeNowString();  // NEW working
     const highscoreId = '1'; // MOCK !!!
 
     const clientDB = await this.clientRepository.findOne({ nickname: newComment.sender});
@@ -50,7 +50,7 @@ export class CommentService implements ICommentService {
     } else {
       console.log( 'added comment client found - id:' + clientDB.id + '  nickname: ' + clientDB.nickname);
       let comment = this.commentRepository.create();
-      // comment.id = uuidv4(); // NEW
+      // comment.id = uuidv4(); // NEWish
       comment.highscoreId = highscoreId;
       comment.text = newComment.text;
       comment.sender = clientDB.nickname;
