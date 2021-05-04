@@ -11,7 +11,7 @@ export class LeaderboardService implements ILeaderboardService {
   allHighscores: HighscoreModel[] = [];
 
   constructor(
-    @Inject(ISharedServiceProvider) private sharedService: ISharedService,  // NEW not working
+    // @Inject(ISharedServiceProvider) private sharedService: ISharedService,  // NEW not working
   ) /*
     @InjectRepository(CommentEntity)
     private highscoreRepository: Repository<HighscoreEntity>,
@@ -38,6 +38,7 @@ export class LeaderboardService implements ILeaderboardService {
     if (second < 10) secZero = '0';
     const posted = year + '-' + mthZero + month + '-' + dateZero + date + '@' + hourZero + hour + ':' + minZero + minute + ':' + secZero + second;
     // to here
+    // const posted = this.sharedService.generateDateTimeNowString();  // NEW working
 
     highscore.date = posted;
     console.log( 'HS model: ', highscore.nickname, highscore.score, highscore.date);
