@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class LeaderboardService implements ILeaderboardService {
-  allHighscores: HighscoreModel[] = [];
+  gameHighscores: HighscoreModel[] = [];
 
   constructor(
     // @Inject(ISharedServiceProvider) private sharedService: ISharedService,  // NEW not working
@@ -42,11 +42,11 @@ export class LeaderboardService implements ILeaderboardService {
 
     highscore.date = posted;
     console.log( 'HS model: ', highscore.nickname, highscore.score, highscore.date);
-    this.allHighscores.push(highscore);
+    this.gameHighscores.push(highscore);
     return highscore;
   }
 
   getHighScores(): HighscoreModel[] {
-    return this.allHighscores;
+    return this.gameHighscores;
   }
 }

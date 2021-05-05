@@ -26,8 +26,13 @@ export class LeaderboardGateway {
   constructor(
     @Inject(ILeaderboardServiceProvider) private leaderboardService: ILeaderboardService) {}
   @WebSocketServer() server;
-  @SubscribeMessage('highscore')
-  handleHighscoreEvent(@MessageBody() highscoreDto: HighscoreDto): void {
+
+  @SubscribeMessage('postHighscore')
+  handleNewHighscoreEvent(
+    @MessageBody() highscoreDto: HighscoreDto,
+    // @ConnectedSocket() client: Socket, // NEEDED??
+
+  ): void {
     console.log('HighscoreDto  = ' + highscoreDto);
     let highscore: HighscoreModel = JSON.parse(JSON.stringify(highscoreDto));
     console.log('HighscoreModel  = ' + highscoreDto);
@@ -38,9 +43,20 @@ export class LeaderboardGateway {
     // return highscore + ' Leaderboard';
   }
 
-  handleConnection(client: Socket, ...args: any[]): any { // Promise<any> {
+  @SubscribeMessage('requestGameHighscores')
+  handleGetGameHighscoresEvent(
+     @MessageBody() gameId: number,
+    // @ConnectedSocket() client: Socket, // NEEDED??
+  ): void {
+    console.log('handleGetGameHighscoresEvent called');
+    const gameHighscores: HighscoreModel[] = this.leaderboardService.getHighScores(); // put gameId in here
+    this.server.emit('gameHighscores', gameHighscores);
+    // return highscore + ' Leaderboard';
+  }
+
+  handleConnect(client: Socket, ...args: any[]): any { // Promise<any> {
     console.log('Leaderboard Client Connect', client.id);
-    client.emit('allHighscores', this.leaderboardService.getHighScores());
+    client.emit('gameHighscores', this.leaderboardService.getHighScores());
     // this.server.emit('clients', await this.commentService.getClients());
   }
 

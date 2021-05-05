@@ -6,11 +6,3 @@ export interface HighscoreDto {
   date: string;
   time: number;
 }
-/*export interface CommentDto {
-  // id: string;
-  highscoreId: string;
-  text: string;
-  sender: string;
-  //posted: string;
-}
-*/

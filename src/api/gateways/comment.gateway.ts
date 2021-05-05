@@ -20,6 +20,7 @@ import { ClientModel } from '../../core/models/client.model';
 import { CommentDto } from '../dtos/comment.dto';
 import { CommentEntity } from '../../infrastructure/data-source/entities/comment.entity';
 import { CommentModel } from '../../core/models/comment.model';
+import { HighscoreModel } from "../../core/models/highscore.model";
 
 @WebSocketGateway()
 export class CommentGateway
@@ -30,8 +31,8 @@ export class CommentGateway
   ) {}
 
   @WebSocketServer() server;
-  @SubscribeMessage('comment')
-  async handleCommentEvent(
+  @SubscribeMessage('postComment')
+  async handlePostCommentEvent(
     @MessageBody() commentDto: CommentDto,
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
@@ -51,6 +52,17 @@ export class CommentGateway
     } catch (e) {
       client.error(e.message);
     }
+  }
+
+  @SubscribeMessage('requestHighscoreComments')
+  async handleGetHighscoreCommentsEvent(
+    @MessageBody() highscoreId: string,
+    // @ConnectedSocket() client: Socket, // NEEDED??
+  ): Promise<void> {
+    console.log('handleGetHighscoreCommentsEvent called');
+    const highscoreComments: CommentModel[] = await this.commentService.getComments(); // put highscoreId in here
+    this.server.emit('highscoreComments', highscoreComments);
+    // return highscore + ' Leaderboard';
   }
 
   @SubscribeMessage('login')
