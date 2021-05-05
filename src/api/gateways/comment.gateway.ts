@@ -35,14 +35,7 @@ export class CommentGateway
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
     // Return CommentModel to controller for REST api
-    console.log(
-      'comment: ' +
-        commentDto.text +
-        ':  client id: ' +
-        client.id +
-        '  nickname: ' +
-        commentDto.sender,
-    );
+    console.log('comment: ' + commentDto.text + ':  client id: ' + client.id + '  nickname: ' + commentDto.sender);
     try {
       let comment: CommentModel = JSON.parse(JSON.stringify(commentDto));
       comment = await this.commentService.addComment(comment);
@@ -55,14 +48,16 @@ export class CommentGateway
   @SubscribeMessage('requestHighscoreComments')
   async handleGetHighscoreCommentsEvent(
     @MessageBody() highscoreId: string,
-    // @ConnectedSocket() client: Socket, // NEEDED??
+    @ConnectedSocket() client: Socket, // NEEDED??
   ): Promise<void> {
     console.log('handleGetHighscoreCommentsEvent called');
-    const highscoreComments: CommentModel[] = await this.commentService.getComments(); // put highscoreId in here
+    try {
+      const highscoreComments: CommentModel[] = await this.commentService.getComments(); // put highscoreId in here
     console.log(highscoreComments.length, ' highscoreComments found ');
-
     this.server.emit('highscoreComments', highscoreComments);
-    // return highscore + ' Leaderboard';
+    } catch (e) {
+      client.error(e.message);
+    }
   }
 
   @SubscribeMessage('login')
@@ -100,7 +95,6 @@ export class CommentGateway
   }
 
   async handleDisconnect(client: Socket): Promise<any> {
-    console.log('Comment Client Disconnect', client.id);
     // const disconnectingClient: ClientModel = this.
     // await this.commentService.deleteClient(client.id); // Disconnect error is here!!
     this.server.emit('clients', await this.commentService.getClients());

@@ -7,10 +7,6 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import {
-  ICommentService,
-  ICommentServiceProvider,
-} from '../../core/primary-ports/comment.service.interface';
 import { Socket } from 'socket.io';
 import { Inject } from '@nestjs/common';
 import { LeaderboardService } from '../../core/services/leaderboard.service';
@@ -28,32 +24,34 @@ export class LeaderboardGateway {
   @WebSocketServer() server;
 
   @SubscribeMessage('postHighscore')
-  handleNewHighscoreEvent(
+  async handlePostHighscoreEvent(
     @MessageBody() highscoreDto: HighscoreDto,
-    // @ConnectedSocket() client: Socket, // NEEDED??
-
-  ): void {
+    @ConnectedSocket() client: Socket,
+  ): Promise<void> {
+    try {
+      let highscore: HighscoreModel = JSON.parse(JSON.stringify(highscoreDto));
     console.log('HighscoreDto  = ' + highscoreDto);
-    let highscore: HighscoreModel = JSON.parse(JSON.stringify(highscoreDto));
-    console.log('HighscoreModel  = ' + highscoreDto);
-
-
-    this.leaderboardService.addHighscore(highscore);
-    this.server.emit('newHighscore', highscore);
-    // return highscore + ' Leaderboard';
+    console.log('HighscoreModel  = ' + highscore);
+      const newHighscore = await this.leaderboardService.addHighscore(highscore);
+      this.server.emit('newHighscore', newHighscore);
+    } catch (e) {
+      client.error(e.message);
+    }
   }
 
   @SubscribeMessage('requestGameHighscores')
   handleGetGameHighscoresEvent(
      @MessageBody() gameId: number,
-    // @ConnectedSocket() client: Socket, // NEEDED??
+    @ConnectedSocket() client: Socket,
   ): void {
     console.log('handleGetGameHighscoresEvent called');
-    const gameHighscores: HighscoreModel[] = this.leaderboardService.getHighScores(); // put gameId in here
+    try {
+      const gameHighscores: HighscoreModel[] = this.leaderboardService.getHighScores(); // put gameId in here
     console.log(gameHighscores.length, ' gameHighscores found ');
-
     this.server.emit('gameHighscores', gameHighscores);
-    // return highscore + ' Leaderboard';
+    } catch (e) {
+      client.error(e.message);
+    }
   }
 
   handleConnect(client: Socket, ...args: any[]): any { // Promise<any> {
