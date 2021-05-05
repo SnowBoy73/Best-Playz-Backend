@@ -26,8 +26,8 @@ import { SharedService } from './core/services/shared.service';
   ],
   controllers: [],
   providers: [
-    /*CommentService*/
-    LeaderboardService, // needed??
+    // CommentService,  // NOT needed - kills DI!
+    // LeaderboardService,  // NOT needed - kills DI!
     SharedService, // needed??
   ],
 })

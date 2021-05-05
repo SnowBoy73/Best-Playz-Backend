@@ -5,11 +5,12 @@ import { ILeaderboardServiceProvider } from '../core/primary-ports/leaderboard.s
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SharedService } from '../core/services/shared.service';
 import { ISharedServiceProvider } from '../core/primary-ports/shared.service.interface';
+import { HighscoreEntity } from '../infrastructure/data-source/entities/highscore.entity';
 
 @Module({
   imports: [
-    // TypeOrmModule.forFeature([HighscoreEntity]),
-    SharedService, // NEW not working
+    TypeOrmModule.forFeature([HighscoreEntity]),
+    SharedService,
   ],
   providers: [
     LeaderboardGateway,

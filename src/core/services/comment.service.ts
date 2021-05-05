@@ -12,19 +12,14 @@ import { ISharedService, ISharedServiceProvider } from "../primary-ports/shared.
 @Injectable()
 export class CommentService implements ICommentService {
   constructor(
-    @Inject(ISharedServiceProvider) private sharedService: ISharedService, // NEW working
-
-    @InjectRepository(CommentEntity)
-    private commentRepository: Repository<CommentEntity>,
-    @InjectRepository(ClientEntity)
-    private clientRepository: Repository<ClientEntity>,
+    @Inject(ISharedServiceProvider) private sharedService: ISharedService,
+    @InjectRepository(CommentEntity) private commentRepository: Repository<CommentEntity>,
+    @InjectRepository(ClientEntity) private clientRepository: Repository<ClientEntity>,
   ) {}
 
   async addComment(newComment: CommentModel): Promise<CommentModel> {
-
-     const sentAt = this.sharedService.generateDateTimeNowString();  // NEW working
+    const sentAt = this.sharedService.generateDateTimeNowString();
     const highscoreId = '1'; // MOCK !!!
-
     const clientDB = await this.clientRepository.findOne({ nickname: newComment.sender});
     if (!clientDB) {
       console.log('added comment client NOT FOUND !!');
