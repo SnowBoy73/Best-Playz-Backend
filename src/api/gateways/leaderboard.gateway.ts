@@ -50,6 +50,8 @@ export class LeaderboardGateway {
   ): void {
     console.log('handleGetGameHighscoresEvent called');
     const gameHighscores: HighscoreModel[] = this.leaderboardService.getHighScores(); // put gameId in here
+    console.log(gameHighscores.length, ' gameHighscores found ');
+
     this.server.emit('gameHighscores', gameHighscores);
     // return highscore + ' Leaderboard';
   }

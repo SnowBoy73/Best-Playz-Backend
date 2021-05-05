@@ -20,14 +20,12 @@ import { ClientModel } from '../../core/models/client.model';
 import { CommentDto } from '../dtos/comment.dto';
 import { CommentEntity } from '../../infrastructure/data-source/entities/comment.entity';
 import { CommentModel } from '../../core/models/comment.model';
-import { HighscoreModel } from "../../core/models/highscore.model";
 
 @WebSocketGateway()
 export class CommentGateway
   implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     @Inject(ICommentServiceProvider) private commentService: ICommentService,
-
   ) {}
 
   @WebSocketServer() server;
@@ -61,6 +59,8 @@ export class CommentGateway
   ): Promise<void> {
     console.log('handleGetHighscoreCommentsEvent called');
     const highscoreComments: CommentModel[] = await this.commentService.getComments(); // put highscoreId in here
+    console.log(highscoreComments.length, ' highscoreComments found ');
+
     this.server.emit('highscoreComments', highscoreComments);
     // return highscore + ' Leaderboard';
   }
@@ -70,7 +70,7 @@ export class CommentGateway
     @MessageBody() loginCommentClientDto: loginDto,
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
-    console.log('safari nickname ', loginCommentClientDto.nickname);
+    console.log('DTO nickname ', loginCommentClientDto.nickname);
 
     // Return CommentClient to controller for REST api
     try {
