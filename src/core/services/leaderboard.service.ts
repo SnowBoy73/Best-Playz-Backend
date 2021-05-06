@@ -13,16 +13,23 @@ export class LeaderboardService implements ILeaderboardService {
 
   constructor(
     @Inject(ISharedServiceProvider) private sharedService: ISharedService,
+    @InjectRepository(HighscoreEntity) private highscoreRepository: Repository<HighscoreEntity>,  // new
+  ) {}
 
-   @InjectRepository(HighscoreEntity) private highscoreRepository: Repository<HighscoreEntity>,  // new
-   ) {}
-
-  addHighscore(highscore: HighscoreModel): HighscoreModel {
+  async addHighscore(newHighscore: HighscoreModel): Promise<HighscoreModel> {
     const posted = this.sharedService.generateDateTimeNowString();
+    console.log( 'HS model: ', newHighscore.nickname, newHighscore.score, newHighscore.date);
+    // this.gameHighscores.push(highscore); // NEW
+
+    let highscore = this.highscoreRepository.create();
+    highscore.nickname = newHighscore.nickname; // MUST SUPPLY NICKNAME FROM GAME!!
+    highscore.gameId = newHighscore.gameId;
+    highscore.score = newHighscore.score;
     highscore.date = posted;
-    console.log( 'HS model: ', highscore.nickname, highscore.score, highscore.date);
-    this.gameHighscores.push(highscore);
-    return highscore;
+    highscore.time = newHighscore.time;
+    highscore = await this.highscoreRepository.save(highscore);
+    const addedHighscore = JSON.parse(JSON.stringify(highscore));
+    return addedHighscore;
   }
 
   getHighScores(): HighscoreModel[] {
