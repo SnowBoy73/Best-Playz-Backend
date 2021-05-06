@@ -20,7 +20,9 @@ import { HighscoreModel } from '../../core/models/highscore.model';
 @WebSocketGateway()
 export class LeaderboardGateway {
   constructor(
-    @Inject(ILeaderboardServiceProvider) private leaderboardService: ILeaderboardService) {}
+    @Inject(ILeaderboardServiceProvider)
+    private leaderboardService: ILeaderboardService,
+  ) {}
   @WebSocketServer() server;
 
   @SubscribeMessage('postHighscore')
@@ -29,10 +31,14 @@ export class LeaderboardGateway {
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
     try {
-      let highscore: HighscoreModel = JSON.parse(JSON.stringify(highscoreDto));
-    console.log('HighscoreDto  = ' + highscoreDto);
-    console.log('HighscoreModel  = ' + highscore);
-      const newHighscore = await this.leaderboardService.addHighscore(highscore);
+      const highscore: HighscoreModel = JSON.parse(
+        JSON.stringify(highscoreDto),
+      );
+      console.log('HighscoreDto  = ' + highscoreDto);
+      console.log('HighscoreModel  = ' + highscore);
+      const newHighscore = await this.leaderboardService.addHighscore(
+        highscore,
+      );
       this.server.emit('newHighscore', newHighscore);
     } catch (e) {
       client.error(e.message);
@@ -40,21 +46,22 @@ export class LeaderboardGateway {
   }
 
   @SubscribeMessage('requestGameHighscores')
-  handleGetGameHighscoresEvent(
-     @MessageBody() gameId: number,
+  async handleGetGameHighscoresEvent(
+    @MessageBody() gameId: number,
     @ConnectedSocket() client: Socket,
-  ): void {
+  ): Promise<void> {
     console.log('handleGetGameHighscoresEvent called');
     try {
-      const gameHighscores: HighscoreModel[] = this.leaderboardService.getHighScores(); // put gameId in here
-    console.log(gameHighscores.length, ' gameHighscores found ');
-    this.server.emit('gameHighscores', gameHighscores);
+      const gameHighscores: HighscoreModel[] = await this.leaderboardService.getHighScores(); // put gameId in here
+      console.log(gameHighscores.length, ' gameHighscores found ');
+      this.server.emit('gameHighscores', gameHighscores);
     } catch (e) {
       client.error(e.message);
     }
   }
 
-  handleConnect(client: Socket, ...args: any[]): any { // Promise<any> {
+  handleConnect(client: Socket, ...args: any[]): any {
+    // Promise<any> {
     console.log('Leaderboard Client Connect', client.id);
     client.emit('gameHighscores', this.leaderboardService.getHighScores());
     // this.server.emit('clients', await this.commentService.getClients());

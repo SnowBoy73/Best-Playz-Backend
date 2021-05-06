@@ -6,6 +6,7 @@ import { ISharedService, ISharedServiceProvider } from "../primary-ports/shared.
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { HighscoreEntity } from "../../infrastructure/data-source/entities/highscore.entity";
+import { CommentModel } from "../models/comment.model";
 
 @Injectable()
 export class LeaderboardService implements ILeaderboardService {
@@ -32,7 +33,10 @@ export class LeaderboardService implements ILeaderboardService {
     return addedHighscore;
   }
 
-  getHighScores(): HighscoreModel[] {
-    return this.gameHighscores;
+  async getHighScores(): Promise<HighscoreModel[]> {
+    // return this.gameHighscores;
+    const highscoresDB = await this.highscoreRepository.find(); // later find by GameId
+    const modelHighscores: HighscoreModel[] = JSON.parse(JSON.stringify(highscoresDB));
+    return modelHighscores;
   }
 }
