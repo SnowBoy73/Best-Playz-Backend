@@ -53,8 +53,8 @@ export class CommentGateway
     console.log('handleGetHighscoreCommentsEvent called');
     try {
       const highscoreComments: CommentModel[] = await this.commentService.getComments(); // put highscoreId in here
-    console.log(highscoreComments.length, ' highscoreComments found ');
-    this.server.emit('highscoreComments', highscoreComments);
+      console.log(highscoreComments.length, ' highscoreComments found ');
+      this.server.emit('highscoreComments', highscoreComments);
     } catch (e) {
       client.error(e.message);
     }
@@ -96,7 +96,7 @@ export class CommentGateway
 
   async handleDisconnect(client: Socket): Promise<any> {
     // const disconnectingClient: ClientModel = this.
-    // await this.commentService.deleteClient(client.id); // Disconnect error is here!!
+    await this.commentService.deleteClient(client.id); // Disconnect error is here!!
     this.server.emit('clients', await this.commentService.getClients());
   }
 }

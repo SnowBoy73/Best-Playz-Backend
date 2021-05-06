@@ -6,11 +6,9 @@ import { ISharedService, ISharedServiceProvider } from "../primary-ports/shared.
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { HighscoreEntity } from "../../infrastructure/data-source/entities/highscore.entity";
-import { CommentModel } from "../models/comment.model";
 
 @Injectable()
 export class LeaderboardService implements ILeaderboardService {
-  gameHighscores: HighscoreModel[] = [];
 
   constructor(
     @Inject(ISharedServiceProvider) private sharedService: ISharedService,
@@ -19,9 +17,7 @@ export class LeaderboardService implements ILeaderboardService {
 
   async addHighscore(newHighscore: HighscoreModel): Promise<HighscoreModel> {
     const posted = this.sharedService.generateDateTimeNowString();
-    console.log( 'HS model: ', newHighscore.nickname, newHighscore.score, newHighscore.date);
-    // this.gameHighscores.push(highscore); // NEW
-
+    console.log( 'HS model: ', newHighscore.nickname, newHighscore.score, posted);
     let highscore = this.highscoreRepository.create();
     highscore.nickname = newHighscore.nickname; // MUST SUPPLY NICKNAME FROM GAME!!
     highscore.gameId = newHighscore.gameId;
@@ -34,7 +30,6 @@ export class LeaderboardService implements ILeaderboardService {
   }
 
   async getHighScores(): Promise<HighscoreModel[]> {
-    // return this.gameHighscores;
     const highscoresDB = await this.highscoreRepository.find(); // later find by GameId
     const modelHighscores: HighscoreModel[] = JSON.parse(JSON.stringify(highscoresDB));
     return modelHighscores;
