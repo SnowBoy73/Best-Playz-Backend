@@ -7,13 +7,11 @@ import { CommentEntity } from '../infrastructure/data-source/entities/comment.en
 import { ClientEntity } from '../infrastructure/data-source/entities/client.entity';
 import { ISharedServiceProvider } from '../core/primary-ports/shared.service.interface';
 import { SharedService } from '../core/services/shared.service';
-import { SharedModule } from './shared.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([CommentEntity, ClientEntity]),
     SharedService,
-    SharedModule,  // NEW working
   ],
   providers: [
     CommentGateway,

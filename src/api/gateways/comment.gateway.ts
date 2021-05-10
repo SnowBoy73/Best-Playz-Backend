@@ -69,7 +69,6 @@ export class CommentGateway
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
     console.log('DTO nickname ', loginCommentClientDto.nickname);
-
     // Return CommentClient to controller for REST api
     try {
       let commentClient: ClientModel = JSON.parse(

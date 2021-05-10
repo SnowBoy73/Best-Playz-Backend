@@ -8,38 +8,7 @@ import { ClientModel } from "../models/client.model";
 
 @Injectable()
 export class SharedService implements ISharedService {
-  constructor(
-    // @InjectRepository(CommentEntity) private commentRepository: Repository<CommentEntity>,
-    //@InjectRepository(ClientEntity) private clientRepository: Repository<ClientEntity>,
-  ) {}
 
-/*
-  async addClient(commentClient: ClientModel): Promise<ClientModel> {
-    const commentClientFoundById = await this.clientRepository.findOne({ id: commentClient.id});
-    if (commentClientFoundById) {
-      return JSON.parse(JSON.stringify(commentClientFoundById));
-    }
-    const commentClientFoundByNickname = await this.clientRepository.findOne({ nickname: commentClient.nickname});
-    if (commentClientFoundByNickname) {
-      throw new Error(' Nickname already used');
-    }
-    let client = this.clientRepository.create();
-    client.nickname = commentClient.nickname;
-    client = await this.clientRepository.save(client);
-    const newCommentClient = JSON.parse(JSON.stringify(client));
-    return newCommentClient; // maybe
-  }
-
-  async getClients(): Promise<ClientModel[]> {
-    const clients = await this.clientRepository.find();
-    const commentClients: ClientModel[] = JSON.parse(JSON.stringify(clients));
-    return commentClients;
-  }
-
-  async deleteClient(id: string): Promise<void> {
-    await this.clientRepository.delete({ id: id });
-  }
-*/
   generateDateTimeNowString(): string {
     const ts = Date.now();
     const date_ob = new Date(ts);
