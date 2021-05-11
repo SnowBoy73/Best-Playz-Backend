@@ -8,9 +8,12 @@ import { Repository } from 'typeorm';
 import { ClientEntity } from '../../infrastructure/data-source/entities/client.entity';
 import { SharedService } from '../services/shared.service';
 import { ISharedService, ISharedServiceProvider } from "../primary-ports/shared.service.interface";
+import { HighscoreModel } from "../models/highscore.model";
 
 @Injectable()
 export class CommentService implements ICommentService {
+  currentHighscore: HighscoreModel = null;
+
   constructor(
     @Inject(ISharedServiceProvider) private sharedService: ISharedService,
     @InjectRepository(CommentEntity) private commentRepository: Repository<CommentEntity>,
@@ -26,7 +29,6 @@ export class CommentService implements ICommentService {
     } else {
       console.log( 'added comment client found - id:' + clientDB.id + '  nickname: ' + clientDB.nickname);
       let comment = this.commentRepository.create();
-      // comment.id = uuidv4(); // NEWish
       comment.highscoreId = highscoreId;
       comment.text = newComment.text;
       comment.sender = clientDB.nickname;
@@ -59,13 +61,31 @@ export class CommentService implements ICommentService {
     return commentClients;
   }
 
-  async getComments(): Promise<CommentModel[]> {
-    const commentsDB = await this.commentRepository.find(); // later find by HighscoreId
-    const modelComments: CommentModel[] = JSON.parse(JSON.stringify(commentsDB));
-    return modelComments;
+  async getComments(highscore: HighscoreModel): Promise<CommentModel[]> {
+    if (highscore != null) {
+      const commentsDB = await this.commentRepository.find( (c) => c.id === highscore.id); // later find by HighscoreId
+      const modelComments: CommentModel[] = JSON.parse(JSON.stringify(commentsDB));
+      return modelComments;
+    } else {
+      const emptyComments: CommentModel[] = [];
+      const warningComment: CommentModel = {
+        id: 'c4badc0b-f47f-45a8-a217-1443ce4c6103', // MOCK - maybe change to ''
+        highscoreId: 'No highscore selected',
+        text: 'Please select a Highscore to view its comments',
+        sender: 'Admin',
+        posted: 'null',
+      };
+      emptyComments.push(warningComment);
+
+      return
+    }
   }
 
   async deleteClient(id: string): Promise<void> {
     await this.clientRepository.delete({ id: id });
+  }
+
+  getCurrentHighscore(): HighscoreModel {
+    return this.currentHighscore;
   }
 }
