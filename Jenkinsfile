@@ -6,7 +6,8 @@ pipeline {
     stages {
         stage("Build API") {
             steps {
-                sh "dotnet build src/api/API.csproj"
+            echo "===REQUIRED: building the API==="
+                //sh "dotnet build src/api/API.csproj"
             }
         }
         stage("Build database") {
