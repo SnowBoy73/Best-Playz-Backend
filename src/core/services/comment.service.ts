@@ -1,74 +1,71 @@
-import { Injectable } from '@nestjs/common';
-import { CommentClient } from "../models/comment-client.model";
-import { Comment } from "../models/comment";
-import { ICommentService } from "../primary-ports/comment.service.interface";
+import { Inject, Injectable } from '@nestjs/common';
+import { ClientModel } from '../models/client.model';
+import { CommentModel } from '../models/comment.model';
+import { ICommentService, ICommentServiceProvider } from "../primary-ports/comment.service.interface";
+import { InjectRepository } from '@nestjs/typeorm';
+import { CommentEntity } from '../../infrastructure/data-source/entities/comment.entity';
+import { Repository } from 'typeorm';
+import { ClientEntity } from '../../infrastructure/data-source/entities/client.entity';
+import { SharedService } from '../services/shared.service';
+import { ISharedService, ISharedServiceProvider } from "../primary-ports/shared.service.interface";
 
 @Injectable()
 export class CommentService implements ICommentService {
-  allComments: Comment[] = []; // TEMP
-  clients: CommentClient[] = [];
+  constructor(
+    @Inject(ISharedServiceProvider) private sharedService: ISharedService,
+    @InjectRepository(CommentEntity) private commentRepository: Repository<CommentEntity>,
+    @InjectRepository(ClientEntity) private clientRepository: Repository<ClientEntity>,
+  ) {}
 
-  addComment(text: string, clientId: string): Comment {
-    const ts = Date.now();
-    const date_ob = new Date(ts);
-    const date = date_ob.getDate();
-    const month = date_ob.getMonth() + 1;
-    const year = date_ob.getFullYear();
-    const hour = date_ob.getHours();
-    const minute = date_ob.getMinutes();
-    const second = date_ob.getSeconds();
-    let mthZero = '';
-    if (month < 10) {
-      mthZero = '0';
+  async addComment(newComment: CommentModel): Promise<CommentModel> {
+    const sentAt = this.sharedService.generateDateTimeNowString();
+    const highscoreId = '1'; // MOCK !!!
+    const clientDB = await this.clientRepository.findOne({ nickname: newComment.sender});
+    if (!clientDB) {
+      console.log('added comment client NOT FOUND !!');
+    } else {
+      console.log( 'added comment client found - id:' + clientDB.id + '  nickname: ' + clientDB.nickname);
+      let comment = this.commentRepository.create();
+      // comment.id = uuidv4(); // NEWish
+      comment.highscoreId = highscoreId;
+      comment.text = newComment.text;
+      comment.sender = clientDB.nickname;
+      comment.posted = sentAt;
+      comment = await this.commentRepository.save(comment);
+      const addedComment = JSON.parse(JSON.stringify(comment));
+      return addedComment;
     }
-    let dateZero = '';
-    if (date < 10) {
-      dateZero = '0';
-    }
-    let hourZero = '';
-    if (hour < 10) {
-      hourZero = '0';
-    }
-    let minZero = '';
-    if (minute < 10) {
-      minZero = '0';
-    }
-    let secZero = '';
-    if (second < 10) {
-      secZero = '0';
-    }
-    const sentAt = year + '-' + mthZero + month + '-' + dateZero + date + '@' + hourZero + hour + ':' + minZero + minute + ':' + secZero + second;
-    console.log('time: ', sentAt);
-
-    const highscoreId = "1"; // MOCK !!!
-    const client = this.clients.find((c) => c.id === clientId);
-    const comment: Comment =  {highscoreId: highscoreId, text: text, sender: client, posted: sentAt };
-    this.allComments.push(comment);
-    return comment;
   }
 
-  addClient(id: string, nickname: string): CommentClient {
-    let commentClient = this.clients.find((c) => c.nickname === nickname && c.id ===id);
-    if (commentClient) {
-      return commentClient;
+  async addClient(commentClient: ClientModel): Promise<ClientModel> {
+    const commentClientFoundById = await this.clientRepository.findOne({ id: commentClient.id});
+    if (commentClientFoundById) {
+      return JSON.parse(JSON.stringify(commentClientFoundById));
     }
-    if (this.clients.find((c) => c.nickname === nickname)) {
-      throw new Error('Nickname is already in use');
+    const commentClientFoundByNickname = await this.clientRepository.findOne({ nickname: commentClient.nickname});
+    if (commentClientFoundByNickname) {
+      throw new Error(' Nickname already used');
     }
-    commentClient = { id: id, nickname: nickname };
-    this.clients.push(commentClient);
-    return commentClient;
+    let client = this.clientRepository.create();
+    client.nickname = commentClient.nickname;
+    client = await this.clientRepository.save(client);
+    const newCommentClient = JSON.parse(JSON.stringify(client));
+    return newCommentClient; // maybe
   }
 
-  getClients() {
-    return this.clients;
+  async getClients(): Promise<ClientModel[]> {
+    const clients = await this.clientRepository.find();
+    const commentClients: ClientModel[] = JSON.parse(JSON.stringify(clients));
+    return commentClients;
   }
 
-  getComments(): Comment[] {
-    return this.allComments;
+  async getComments(): Promise<CommentModel[]> {
+    const commentsDB = await this.commentRepository.find(); // later find by HighscoreId
+    const modelComments: CommentModel[] = JSON.parse(JSON.stringify(commentsDB));
+    return modelComments;
   }
 
-  deleteClient(id: string): void {
-    this.clients = this.clients.filter((c) => c.id !== id);
+  async deleteClient(id: string): Promise<void> {
+    await this.clientRepository.delete({ id: id });
   }
 }
