@@ -19,7 +19,8 @@ import { SharedService } from '../core/services/shared.service';
       provide: ICommentServiceProvider,
       useClass: CommentService,
     },
-    { // Is this needed??. Not used in GW
+    {
+      // Is this needed??. Not used in GW
       provide: ISharedServiceProvider,
       useClass: SharedService,
     }, //
