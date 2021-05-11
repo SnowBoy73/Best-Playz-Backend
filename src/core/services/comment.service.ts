@@ -62,23 +62,36 @@ export class CommentService implements ICommentService {
   }
 
   async getComments(highscore: HighscoreModel): Promise<CommentModel[]> {
-    if (highscore != null) {
-      const commentsDB = await this.commentRepository.find( (c) => c.id === highscore.id); // later find by HighscoreId
-      const modelComments: CommentModel[] = JSON.parse(JSON.stringify(commentsDB));
-      return modelComments;
-    } else {
-      const emptyComments: CommentModel[] = [];
-      const warningComment: CommentModel = {
-        id: 'c4badc0b-f47f-45a8-a217-1443ce4c6103', // MOCK - maybe change to ''
-        highscoreId: 'No highscore selected',
-        text: 'Please select a Highscore to view its comments',
-        sender: 'Admin',
-        posted: 'null',
-      };
-      emptyComments.push(warningComment);
+    console.log('getComments HighscoreModel: id= ', highscore.id, ' by ', highscore.nickname)
 
-      return
-    }
+    const mockId = '73784766-53eb-4384-989e-3a6472cc74b1'; // MOCK
+      if (highscore.id != null) {
+        const commentsDB = await this.commentRepository.find({ id: mockId }) //highscore.id })
+          .then((highscoreComments) => {
+            console.log('Comments found: ', highscoreComments);
+          }) .catch((err) => {
+            console.log('Error: ', err);
+          })
+          .finally(() => {
+            console.log('Finally called');
+          }); //c => c.id === highscore.id); // later find by HighscoreId
+        const modelComments: CommentModel[] = JSON.parse(JSON.stringify(commentsDB));
+        console.log('modelComments = ', modelComments);
+        return modelComments;
+
+      } else {
+        const emptyComments: CommentModel[] = [];
+        const warningComment: CommentModel = {
+          id: 'c4badc0b-f47f-45a8-a217-1443ce4c6103', // MOCK - maybe change to ''
+          highscoreId: 'No highscore selected',
+          text: 'Please select a Highscore to view its comments',
+          sender: 'Admin',
+          posted: 'null',
+      };
+
+      emptyComments.push(warningComment);
+      return emptyComments;
+      }
   }
 
   async deleteClient(id: string): Promise<void> {
