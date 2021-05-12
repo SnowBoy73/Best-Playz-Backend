@@ -4,7 +4,7 @@ pipeline {
         pollSCM("H/5 * * * *")
     }
     stages {
-        stage("Build API") {
+        stage("Build") {
             steps {
             //echo "===REQUIRED: building the API==="
              sh "npm install"
@@ -16,13 +16,13 @@ pipeline {
                 echo "===== OPTIONAL: Will build the database (if using a state-based approach)Using Flyway so No ====="
             }
         }
-        stage("Test API") {
+        stage("Test") {
             steps {
               echo "===== REQUIRED: Will execute unit tests of the API project ====="
               //sh "dotnet test test/UnitTest UnitTest.csproj"
             }
         }
-        stage("Deliver API") {
+        stage("Deliver") {
             steps {
                 echo "===== REQUIRED: Will deliver the API to Docker Hub ====="
                 /* sh "docker build ./db/docker -t nadiamiteva/mysqlserver-db"
