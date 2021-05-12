@@ -7,7 +7,7 @@ pipeline {
         stage("Build API") {
             steps {
             //echo "===REQUIRED: building the API==="
-              sh "npm run start:dev"
+             sh "npm run start:dev"
             }
         }
         stage("Build database") {
