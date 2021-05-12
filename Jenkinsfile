@@ -8,6 +8,8 @@ pipeline {
             steps {
             //echo "===REQUIRED: building the API==="
              sh "npm install"
+             sh "npm run build"
+             sh "npm run start:dev"
             }
         }
         stage("Build database") {
