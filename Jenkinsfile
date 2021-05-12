@@ -25,7 +25,7 @@ pipeline {
         stage("Deliver") {
             steps {
                 echo "===== REQUIRED: Will deliver the API to Docker Hub ====="
-                /* sh "docker build ./db/docker -t nadiamiteva/mysqlserver-db"
+                /* sh "docker build ./db/docker -t best-playz-backend"
                 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'DockerHub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']])
 				{
 					sh 'docker login -u ${USERNAME} -p ${PASSWORD}'
