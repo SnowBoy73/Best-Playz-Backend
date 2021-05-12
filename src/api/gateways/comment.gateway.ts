@@ -99,7 +99,7 @@ export class CommentGateway
         comments: allComments,
       };
       console.log('All nicknames ', commentClients);
-      client.emit('welcome', welcome);
+      client.emit('welcome', welcome);  // old.. remove??
       this.server.emit('clients', commentClients);
     } catch (e) {
       client.error(e.message);

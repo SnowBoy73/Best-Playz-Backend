@@ -67,15 +67,15 @@ export class CommentService implements ICommentService {
     // const mockId = '73784766-53eb-4384-989e-3a6472cc74b1'; // MOCK
       if (highscore != null) {
         try {  // Try - catch not working
-          const commentsDB = await this.commentRepository.find({ where: { highscoreId: highscore.id} });  // WORKS!!!
-          /* .then((highscoreComments) => {
+          const commentsDB = await this.commentRepository.find({ where: { highscoreId: highscore.id} })  // WORKS!!!
+        /*   .then((commentsDB) => { // NOT WORKING YET - blue null id error
              console.log('Comments found: ', commentsDB);
            }) .catch((err) => {
              console.log('Error: ', err);
            })
-           .finally(() => {
+           .finally(() => {  // cuts of line 79-100 ish ???
              console.log('Finally called');
-           }); */
+           });*/
           const highscoreComments: CommentModel[] = JSON.parse(JSON.stringify(commentsDB));
           console.log('modelComments = ', highscoreComments);
           return highscoreComments;
