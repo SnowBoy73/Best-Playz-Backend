@@ -1,0 +1,24 @@
+version: "3.3"
+
+services:
+  #environment:
+    #EnvironmentName: Test
+    #ports:
+      #- 3601:80
+#This builds the nest application without connection to the DB
+  main:
+    container_name: app
+    build:
+      context: .
+      target: development
+    command: npm run start:dev
+    volumes:
+    - .:/usr/src/app
+    - /usr/src/app/node_modules
+    ports:
+    - 3000:3000
+    - 3600:3600
+    env_file:
+    - .env
+    networks:
+    - postgres
