@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 import { ClientEntity } from '../../infrastructure/data-source/entities/client.entity';
 import { SharedService } from '../services/shared.service';
 import { ISharedService, ISharedServiceProvider } from "../primary-ports/shared.service.interface";
-import { HighscoreModel } from "../models/highscore.model";
+import { HighscoreModel } from '../models/highscore.model';
 
 @Injectable()
 export class CommentService implements ICommentService {
@@ -28,10 +28,10 @@ export class CommentService implements ICommentService {
       console.log('added comment client NOT FOUND !!');
     } else {
       console.log( 'added comment client found - id:' + clientDB.id + '  nickname: ' + clientDB.nickname);
-      console.log( 'this.currentHighscore.id = ', this.currentHighscore.id);
+      console.log( 'ADD commentthis.currentHighscore.id= ', this.currentHighscore.id);
 
       let comment = this.commentRepository.create();
-      comment.highscoreId = this.currentHighscore.id; // was highscoreId - changed, stopped add to DB
+      comment.highscoreId = this.currentHighscore.id// highscoreId;
       comment.text = newComment.text;
       comment.sender = clientDB.nickname;
       comment.posted = sentAt;
@@ -39,6 +39,50 @@ export class CommentService implements ICommentService {
       const addedComment = JSON.parse(JSON.stringify(comment));
       return addedComment;
     }
+  }
+
+  async getComments(highscore: HighscoreModel): Promise<CommentModel[]> {
+    console.log('getComments HighscoreModel: id= ', highscore.id, ' by ', highscore.nickname)
+
+
+    this.currentHighscore = highscore; // NEW!!!
+    console.log('this.currentHighscore= ', this.currentHighscore)
+
+    //if (highscore != undefined || null) {
+    try { // Try - catch not working
+
+      const commentsDB = await this.commentRepository.find({ where: { highscoreId: highscore.id} })  // WORKS!!!
+      /*   .then((commentsDB) => { // NOT WORKING YET - blue null id error
+         console.log('Comments found: ', commentsDB);
+       }) .catch((err) => {
+         console.log('Error: ', err);
+       })
+       .finally(() => {  // cuts of line 79-100 ish ???
+         console.log('Finally called');
+       });*/
+      const highscoreComments: CommentModel[] = JSON.parse(JSON.stringify(commentsDB));
+      console.log('modelComments = ', highscoreComments);
+      return highscoreComments;
+    } catch (e) {
+      Error(e.message);
+    }
+    /*} else {
+      try {
+        // Try - catch not working
+        const emptyComments: CommentModel[] = [];
+        const warningComment: CommentModel = {
+          id: 'c4badc0b-f47f-45a8-a217-1443ce4c6103', // MOCK - maybe change to ''
+          highscoreId: 'No highscore selected',
+          text: 'Please select a Highscore to view its comments',
+          sender: 'Admin',
+          posted: 'null',
+        };
+        emptyComments.push(warningComment);
+        return emptyComments;
+      } catch (e) {
+        Error(e.message);
+      }
+    }*/
   }
 
   async addClient(commentClient: ClientModel): Promise<ClientModel> {
@@ -63,44 +107,6 @@ export class CommentService implements ICommentService {
     return allClients;
   }
 
-  async getComments(highscore: HighscoreModel): Promise<CommentModel[]> {
-    console.log('getComments HighscoreModel: id= ', highscore.id, ' by ', highscore.nickname)
-    //if (highscore != undefined || null) {
-      try { // Try - catch not working
-
-      const commentsDB = await this.commentRepository.find({ where: { highscoreId: highscore.id} })  // WORKS!!!
-        /*   .then((commentsDB) => { // NOT WORKING YET - blue null id error
-           console.log('Comments found: ', commentsDB);
-         }) .catch((err) => {
-           console.log('Error: ', err);
-         })
-         .finally(() => {  // cuts of line 79-100 ish ???
-           console.log('Finally called');
-         });*/
-        const highscoreComments: CommentModel[] = JSON.parse(JSON.stringify(commentsDB));
-        console.log('modelComments = ', highscoreComments);
-        return highscoreComments;
-      } catch (e) {
-        Error(e.message);
-      }
-    /*} else {
-      try {
-        // Try - catch not working
-        const emptyComments: CommentModel[] = [];
-        const warningComment: CommentModel = {
-          id: 'c4badc0b-f47f-45a8-a217-1443ce4c6103', // MOCK - maybe change to ''
-          highscoreId: 'No highscore selected',
-          text: 'Please select a Highscore to view its comments',
-          sender: 'Admin',
-          posted: 'null',
-        };
-        emptyComments.push(warningComment);
-        return emptyComments;
-      } catch (e) {
-        Error(e.message);
-      }
-    }*/
-  }
 
   async deleteClient(id: string): Promise<void> {
     await this.clientRepository.delete({ id: id });
@@ -108,7 +114,6 @@ export class CommentService implements ICommentService {
 
   getCurrentHighscore(): HighscoreModel {
     console.log('currentHighscore = ', this.currentHighscore);
-
     return this.currentHighscore;
   }
 }
