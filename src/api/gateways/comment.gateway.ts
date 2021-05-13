@@ -87,20 +87,30 @@ export class CommentGateway
 
     // Return Client to controller for REST api
     try {
-      let commentClient: ClientModel = JSON.parse(
+      let newClient: ClientModel = JSON.parse(
         JSON.stringify(loginCommentClientDto),
       );
-      commentClient = await this.commentService.addClient(commentClient);
-      const commentClients = await this.commentService.getClients();
-      const allComments = await this.commentService.getComments(this.commentService.getCurrentHighscore());
+      console.log('newClient ', newClient);
+
+      newClient = await this.commentService.addClient(newClient);
+      console.log('newClient2 ', newClient);
+
+      const clients = await this.commentService.getClients();
+      console.log('clients ', clients);
+
+      //const allComments = await this.commentService.getComments(this.commentService.getCurrentHighscore());  // old.. remove??
+      //console.log('allComments = ', allComments);
+
       const welcome: WelcomeDto = {
-        clients: commentClients,
-        client: commentClient,
-        comments: allComments,
+        clients: clients,
+        client: newClient,
+        comments: null,  //allComments,  // old.. remove??
       };
-      console.log('All nicknames ', commentClients);
-      client.emit('welcome', welcome);  // old.. remove??
-      this.server.emit('clients', commentClients);
+      console.log('welcomeDto ', welcome);
+
+      console.log('All nicknames ', clients);
+      client.emit('welcome', welcome);
+      this.server.emit('clients', clients);
     } catch (e) {
       client.error(e.message);
     }

@@ -28,8 +28,10 @@ export class CommentService implements ICommentService {
       console.log('added comment client NOT FOUND !!');
     } else {
       console.log( 'added comment client found - id:' + clientDB.id + '  nickname: ' + clientDB.nickname);
+      console.log( 'this.currentHighscore.id = ', this.currentHighscore.id);
+
       let comment = this.commentRepository.create();
-      comment.highscoreId = highscoreId;
+      comment.highscoreId = this.currentHighscore.id; // was highscoreId - changed, stopped add to DB
       comment.text = newComment.text;
       comment.sender = clientDB.nickname;
       comment.posted = sentAt;
@@ -40,65 +42,64 @@ export class CommentService implements ICommentService {
   }
 
   async addClient(commentClient: ClientModel): Promise<ClientModel> {
-    const commentClientFoundById = await this.clientRepository.findOne({ id: commentClient.id});
-    if (commentClientFoundById) {
-      return JSON.parse(JSON.stringify(commentClientFoundById));
+    const clientFoundById = await this.clientRepository.findOne({ id: commentClient.id});
+    if (clientFoundById) {
+      return JSON.parse(JSON.stringify(clientFoundById));
     }
-    const commentClientFoundByNickname = await this.clientRepository.findOne({ nickname: commentClient.nickname});
-    if (commentClientFoundByNickname) {
+    const clientFoundByNickname = await this.clientRepository.findOne({ nickname: commentClient.nickname});
+    if (clientFoundByNickname) {
       throw new Error(' Nickname already used');
     }
     let client = this.clientRepository.create();
     client.nickname = commentClient.nickname;
     client = await this.clientRepository.save(client);
-    const newCommentClient = JSON.parse(JSON.stringify(client));
-    return newCommentClient; // maybe
+    const newClient = JSON.parse(JSON.stringify(client));
+    return newClient; // maybe
   }
 
   async getClients(): Promise<ClientModel[]> {
     const clients = await this.clientRepository.find();
-    const commentClients: ClientModel[] = JSON.parse(JSON.stringify(clients));
-    return commentClients;
+    const allClients: ClientModel[] = JSON.parse(JSON.stringify(clients));
+    return allClients;
   }
 
   async getComments(highscore: HighscoreModel): Promise<CommentModel[]> {
     console.log('getComments HighscoreModel: id= ', highscore.id, ' by ', highscore.nickname)
+    //if (highscore != undefined || null) {
+      try { // Try - catch not working
 
-    // const mockId = '73784766-53eb-4384-989e-3a6472cc74b1'; // MOCK
-      if (highscore != null) {
-        try {  // Try - catch not working
-          const commentsDB = await this.commentRepository.find({ where: { highscoreId: highscore.id} })  // WORKS!!!
+      const commentsDB = await this.commentRepository.find({ where: { highscoreId: highscore.id} })  // WORKS!!!
         /*   .then((commentsDB) => { // NOT WORKING YET - blue null id error
-             console.log('Comments found: ', commentsDB);
-           }) .catch((err) => {
-             console.log('Error: ', err);
-           })
-           .finally(() => {  // cuts of line 79-100 ish ???
-             console.log('Finally called');
-           });*/
-          const highscoreComments: CommentModel[] = JSON.parse(JSON.stringify(commentsDB));
-          console.log('modelComments = ', highscoreComments);
-          return highscoreComments;
-        } catch (e) {
-          Error(e.message);
-        }
-        } else {
-        try {  // Try - catch not working
-          const emptyComments: CommentModel[] = [];
-          const warningComment: CommentModel = {
-            id: 'c4badc0b-f47f-45a8-a217-1443ce4c6103', // MOCK - maybe change to ''
-            highscoreId: 'No highscore selected',
-            text: 'Please select a Highscore to view its comments',
-            sender: 'Admin',
-            posted: 'null',
-          };
-          emptyComments.push(warningComment);
-          return emptyComments;
+           console.log('Comments found: ', commentsDB);
+         }) .catch((err) => {
+           console.log('Error: ', err);
+         })
+         .finally(() => {  // cuts of line 79-100 ish ???
+           console.log('Finally called');
+         });*/
+        const highscoreComments: CommentModel[] = JSON.parse(JSON.stringify(commentsDB));
+        console.log('modelComments = ', highscoreComments);
+        return highscoreComments;
       } catch (e) {
-      Error(e.message);
-    }
-        }
-
+        Error(e.message);
+      }
+    /*} else {
+      try {
+        // Try - catch not working
+        const emptyComments: CommentModel[] = [];
+        const warningComment: CommentModel = {
+          id: 'c4badc0b-f47f-45a8-a217-1443ce4c6103', // MOCK - maybe change to ''
+          highscoreId: 'No highscore selected',
+          text: 'Please select a Highscore to view its comments',
+          sender: 'Admin',
+          posted: 'null',
+        };
+        emptyComments.push(warningComment);
+        return emptyComments;
+      } catch (e) {
+        Error(e.message);
+      }
+    }*/
   }
 
   async deleteClient(id: string): Promise<void> {
@@ -106,6 +107,8 @@ export class CommentService implements ICommentService {
   }
 
   getCurrentHighscore(): HighscoreModel {
+    console.log('currentHighscore = ', this.currentHighscore);
+
     return this.currentHighscore;
   }
 }
