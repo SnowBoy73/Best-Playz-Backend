@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientEntity } from '../entities/client.entity';
 import { CommentEntity } from '../entities/comment.entity';
-import { HighscoreEntity } from "../entities/highscore.entity";
+import { HighscoreEntity } from '../entities/highscore.entity';
 
 @Module({
   imports: [
