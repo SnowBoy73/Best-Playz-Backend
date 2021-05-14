@@ -12,18 +12,12 @@ import {
   ICommentServiceProvider,
 } from '../../core/primary-ports/comment.service.interface';
 import { Socket } from 'socket.io';
-import { CommentService } from '../../core/services/comment.service';
 import { WelcomeDto } from '../dtos/welcome.dto';
 import { Inject } from '@nestjs/common';
 import { loginDto } from '../dtos/login.dto';
 import { ClientModel } from '../../core/models/client.model';
 import { CommentDto } from '../dtos/comment.dto';
-import { CommentEntity } from '../../infrastructure/data-source/entities/comment.entity';
 import { CommentModel } from '../../core/models/comment.model';
-import {
-  ISharedService,
-  ISharedServiceProvider,
-} from '../../core/primary-ports/shared.service.interface';
 import { HighscoreDto } from '../dtos/highscore.dto';
 import { HighscoreModel } from '../../core/models/highscore.model';
 
@@ -61,7 +55,7 @@ export class CommentGateway
   @SubscribeMessage('requestHighscoreComments')
   async handleGetHighscoreCommentsEvent(
     @MessageBody() highscoreDto: HighscoreDto,
-    @ConnectedSocket() client: Socket, // NEEDED??
+    @ConnectedSocket() client: Socket,
   ): Promise<void> {
     console.log('handleGetHighscoreCommentsEvent called');
     try {
@@ -91,23 +85,16 @@ export class CommentGateway
         JSON.stringify(loginCommentClientDto),
       );
       console.log('newClient ', newClient);
-
       newClient = await this.commentService.addClient(newClient);
       console.log('newClient2 ', newClient);
-
       const clients = await this.commentService.getClients();
       console.log('clients ', clients);
-
-      //const allComments = await this.commentService.getComments(this.commentService.getCurrentHighscore());  // old.. remove??
-      //console.log('allComments = ', allComments);
-
       const welcome: WelcomeDto = {
         clients: clients,
         client: newClient,
-        comments: null,  //allComments,  // old.. remove??
+        comments: null, // should remove from welcomeDto?
       };
       console.log('welcomeDto ', welcome);
-
       console.log('All nicknames ', clients);
       client.emit('welcome', welcome);
       this.server.emit('clients', clients);

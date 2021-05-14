@@ -22,7 +22,6 @@ export class CommentService implements ICommentService {
 
   async addComment(newComment: CommentModel): Promise<CommentModel> {
     const sentAt = this.sharedService.generateDateTimeNowString();
-    const highscoreId = '1'; // MOCK !!!
     const clientDB = await this.clientRepository.findOne({ nickname: newComment.sender});
     if (!clientDB) {
       console.log('added comment client NOT FOUND !!');
@@ -31,7 +30,7 @@ export class CommentService implements ICommentService {
       console.log( 'ADD commentthis.currentHighscore.id= ', this.currentHighscore.id);
 
       let comment = this.commentRepository.create();
-      comment.highscoreId = this.currentHighscore.id// highscoreId;
+      comment.highscoreId = this.currentHighscore.id;
       comment.text = newComment.text;
       comment.sender = clientDB.nickname;
       comment.posted = sentAt;
@@ -42,47 +41,31 @@ export class CommentService implements ICommentService {
   }
 
   async getComments(highscore: HighscoreModel): Promise<CommentModel[]> {
-    console.log('getComments HighscoreModel: id= ', highscore.id, ' by ', highscore.nickname)
-
-
     this.currentHighscore = highscore; // NEW!!!
-    console.log('this.currentHighscore= ', this.currentHighscore)
-
-    //if (highscore != undefined || null) {
-    try { // Try - catch not working
-
-      const commentsDB = await this.commentRepository.find({ where: { highscoreId: highscore.id} })  // WORKS!!!
-      /*   .then((commentsDB) => { // NOT WORKING YET - blue null id error
-         console.log('Comments found: ', commentsDB);
-       }) .catch((err) => {
-         console.log('Error: ', err);
-       })
-       .finally(() => {  // cuts of line 79-100 ish ???
-         console.log('Finally called');
-       });*/
-      const highscoreComments: CommentModel[] = JSON.parse(JSON.stringify(commentsDB));
-      console.log('modelComments = ', highscoreComments);
-      return highscoreComments;
-    } catch (e) {
-      Error(e.message);
-    }
-    /*} else {
+    console.log('this.currentHighscore= ', this.currentHighscore);
+    if (highscore != undefined || null) {
+      const commentsDB = await this.commentRepository.find({
+        where: { highscoreId: highscore.id },
+      });
+        const highscoreComments: CommentModel[] = JSON.parse(JSON.stringify(commentsDB));
+        console.log('modelComments = ', highscoreComments);
+        return highscoreComments;
+      } else {
       try {
-        // Try - catch not working
         const emptyComments: CommentModel[] = [];
         const warningComment: CommentModel = {
-          id: 'c4badc0b-f47f-45a8-a217-1443ce4c6103', // MOCK - maybe change to ''
+          id: 'c4badc0b-f47f-45a8-a217-1443ce4c6103',
           highscoreId: 'No highscore selected',
           text: 'Please select a Highscore to view its comments',
           sender: 'Admin',
-          posted: 'null',
+          posted: '',
         };
         emptyComments.push(warningComment);
         return emptyComments;
       } catch (e) {
         Error(e.message);
       }
-    }*/
+    }
   }
 
   async addClient(commentClient: ClientModel): Promise<ClientModel> {
@@ -106,7 +89,6 @@ export class CommentService implements ICommentService {
     const allClients: ClientModel[] = JSON.parse(JSON.stringify(clients));
     return allClients;
   }
-
 
   async deleteClient(id: string): Promise<void> {
     await this.clientRepository.delete({ id: id });

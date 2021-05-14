@@ -9,7 +9,7 @@ export class HighscoreEntity {
   public nickname: string;
 
   @Column()
-  public gameId: number;
+  public gameId: string;
 
   @Column()
   public score: number;  // no double... has decimals??
