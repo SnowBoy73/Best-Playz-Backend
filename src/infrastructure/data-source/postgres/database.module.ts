@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientEntity } from '../entities/client.entity';
 import { CommentEntity } from '../entities/comment.entity';
-import { HighscoreEntity } from "../entities/highscore.entity";
+import { HighscoreEntity } from '../entities/highscore.entity';
 
 @Module({
   imports: [
@@ -18,7 +18,7 @@ import { HighscoreEntity } from "../entities/highscore.entity";
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
         entities: [ClientEntity, CommentEntity, HighscoreEntity],
-        synchronize: false, //true for DEV, but deletes data if DB is shutdown, // false for PRODUCTION
+        synchronize: true, //true for DEV, but deletes data if DB is shutdown, // false for PRODUCTION
       }),
     }),
   ],
