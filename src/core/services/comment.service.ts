@@ -30,7 +30,7 @@ export class CommentService implements ICommentService {
       console.log( 'ADD commentthis.currentHighscore.id= ', this.currentHighscore.id);
 
       let comment = this.commentRepository.create();
-      comment.highscoreId = this.currentHighscore.id;
+      comment.highscoreId = newComment.highscoreId; // FIXED PROB!!
       comment.text = newComment.text;
       comment.sender = clientDB.nickname;
       comment.posted = sentAt;
