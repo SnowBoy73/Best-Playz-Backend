@@ -1,9 +1,9 @@
 version: "3.3"
 
 services:
-  #environment:
-    #EnvironmentName: Test
-    #ports:
-      #- 3601:80
-#This builds the nest application without connection to the DB
+  main:
+    environment:
+      EnvironmentName: Development
+    ports:
+      - 3601:80
 

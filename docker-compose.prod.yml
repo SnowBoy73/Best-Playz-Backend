@@ -1,7 +1,9 @@
 version: "3.3"
 
 services:
- environment:
-  EnvironmentName: Production
- ports:
-  - 3701:80
+ main:
+  environment:
+   EnvironmentName: Production
+  ports:
+   - 3701:80
+
