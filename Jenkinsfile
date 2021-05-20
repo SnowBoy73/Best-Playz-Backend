@@ -24,7 +24,7 @@ pipeline {
 				{
 					sh 'docker login -u ${USERNAME} -p ${PASSWORD}'
 				}
-                sh "docker push nadiamiteva/best-playz-backend_main" */
+                sh "docker push nadiamiteva/best-playz-backend_main"
             }
         }
         stage("Release staging environment") {
