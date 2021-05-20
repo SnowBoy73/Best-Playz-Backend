@@ -19,7 +19,7 @@ pipeline {
         stage("Deliver") {
             steps {
                 // echo "===== REQUIRED: Will deliver the API to Docker Hub ====="
-                sh "docker build ./db/docker -t best-playz-backend_main"
+                sh "docker build . -t best-playz-backend_main"
                 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'DockerHub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']])
 				{
 					sh 'docker login -u ${USERNAME} -p ${PASSWORD}'
