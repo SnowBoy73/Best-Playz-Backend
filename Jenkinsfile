@@ -16,21 +16,15 @@ pipeline {
                 echo "===== OPTIONAL: Will build the database (if using a state-based approach)Using Flyway so No ====="
             }
         }
-        stage("Test") {
-            steps {
-              echo "===== REQUIRED: Will execute unit tests of the API project ====="
-              //sh "dotnet test test/UnitTest UnitTest.csproj"
-            }
-        }
         stage("Deliver") {
             steps {
-                echo "===== REQUIRED: Will deliver the API to Docker Hub ====="
-                /* sh "docker build ./db/docker -t best-playz-backend"
+                // echo "===== REQUIRED: Will deliver the API to Docker Hub ====="
+                sh "docker build ./db/docker -t best-playz-backend_main"
                 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'DockerHub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']])
 				{
 					sh 'docker login -u ${USERNAME} -p ${PASSWORD}'
 				}
-                sh "docker push nadiamiteva/mysqlserver-db" */
+                sh "docker push nadiamiteva/best-playz-backend_main" */
             }
         }
         stage("Release staging environment") {
