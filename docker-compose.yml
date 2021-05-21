@@ -4,14 +4,13 @@ services:
     container_name: app
     build:
       context: .
-      target: development
+      dockerfile: Dockerfile
     command: npm run start:dev
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
       - 3000:3000
-      - 3600:3600
     env_file:
       - .env
     networks:
