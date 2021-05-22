@@ -60,14 +60,13 @@ export class LeaderboardGateway {
     }
   }
 
-  handleConnect(client: Socket, ...args: any[]): any {
-    // Promise<any> {
+  handleConnect(client: Socket, ...args: any[]): any { // Promise<any> { // DELETABLE METHOD ??
     console.log('Leaderboard Client Connect', client.id);
     client.emit('gameHighscores', this.leaderboardService.getHighScores());
     // this.server.emit('clients', await this.commentService.getClients());
   }
 
-  async handleDisconnect(client: Socket): Promise<any> {
+  async handleDisconnect(client: Socket): Promise<any> { // DELETABLE METHOD ??
     console.log('Leaderboard Client Disconnect', client.id);
     //  await this.commentService.deleteClient(client.id);
     // this.server.emit('clients', await this.commentService.getClients());

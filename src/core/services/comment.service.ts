@@ -8,9 +8,12 @@ import { Repository } from 'typeorm';
 import { ClientEntity } from '../../infrastructure/data-source/entities/client.entity';
 import { SharedService } from '../services/shared.service';
 import { ISharedService, ISharedServiceProvider } from "../primary-ports/shared.service.interface";
+import { HighscoreModel } from '../models/highscore.model';
 
 @Injectable()
 export class CommentService implements ICommentService {
+  currentHighscore: HighscoreModel = null;
+
   constructor(
     @Inject(ISharedServiceProvider) private sharedService: ISharedService,
     @InjectRepository(CommentEntity) private commentRepository: Repository<CommentEntity>,
@@ -19,15 +22,15 @@ export class CommentService implements ICommentService {
 
   async addComment(newComment: CommentModel): Promise<CommentModel> {
     const sentAt = this.sharedService.generateDateTimeNowString();
-    const highscoreId = '1'; // MOCK !!!
     const clientDB = await this.clientRepository.findOne({ nickname: newComment.sender});
     if (!clientDB) {
       console.log('added comment client NOT FOUND !!');
     } else {
       console.log( 'added comment client found - id:' + clientDB.id + '  nickname: ' + clientDB.nickname);
+      console.log( 'ADD commentthis.currentHighscore.id= ', this.currentHighscore.id);
+
       let comment = this.commentRepository.create();
-      // comment.id = uuidv4(); // NEWish
-      comment.highscoreId = highscoreId;
+      comment.highscoreId = newComment.highscoreId; // FIXED PROB!!
       comment.text = newComment.text;
       comment.sender = clientDB.nickname;
       comment.posted = sentAt;
@@ -37,35 +40,62 @@ export class CommentService implements ICommentService {
     }
   }
 
-  async addClient(commentClient: ClientModel): Promise<ClientModel> {
-    const commentClientFoundById = await this.clientRepository.findOne({ id: commentClient.id});
-    if (commentClientFoundById) {
-      return JSON.parse(JSON.stringify(commentClientFoundById));
+  async getComments(highscore: HighscoreModel): Promise<CommentModel[]> {
+    this.currentHighscore = highscore; // NEW!!!
+    console.log('this.currentHighscore= ', this.currentHighscore);
+    if (highscore != undefined || null) {
+      const commentsDB = await this.commentRepository.find({
+        where: { highscoreId: highscore.id },
+      });
+        const highscoreComments: CommentModel[] = JSON.parse(JSON.stringify(commentsDB));
+        console.log('modelComments = ', highscoreComments);
+        return highscoreComments;
+      } else {
+      try {
+        const emptyComments: CommentModel[] = [];
+        const warningComment: CommentModel = {
+          id: 'c4badc0b-f47f-45a8-a217-1443ce4c6103',
+          highscoreId: 'No highscore selected',
+          text: 'Please select a Highscore to view its comments',
+          sender: 'Admin',
+          posted: '',
+        };
+        emptyComments.push(warningComment);
+        return emptyComments;
+      } catch (e) {
+        Error(e.message);
+      }
     }
-    const commentClientFoundByNickname = await this.clientRepository.findOne({ nickname: commentClient.nickname});
-    if (commentClientFoundByNickname) {
+  }
+
+  async addClient(commentClient: ClientModel): Promise<ClientModel> {
+    const clientFoundById = await this.clientRepository.findOne({ id: commentClient.id});
+    if (clientFoundById) {
+      return JSON.parse(JSON.stringify(clientFoundById));
+    }
+    const clientFoundByNickname = await this.clientRepository.findOne({ nickname: commentClient.nickname});
+    if (clientFoundByNickname) {
       throw new Error(' Nickname already used');
     }
     let client = this.clientRepository.create();
     client.nickname = commentClient.nickname;
     client = await this.clientRepository.save(client);
-    const newCommentClient = JSON.parse(JSON.stringify(client));
-    return newCommentClient; // maybe
+    const newClient = JSON.parse(JSON.stringify(client));
+    return newClient; // maybe
   }
 
   async getClients(): Promise<ClientModel[]> {
     const clients = await this.clientRepository.find();
-    const commentClients: ClientModel[] = JSON.parse(JSON.stringify(clients));
-    return commentClients;
-  }
-
-  async getComments(): Promise<CommentModel[]> {
-    const commentsDB = await this.commentRepository.find(); // later find by HighscoreId
-    const modelComments: CommentModel[] = JSON.parse(JSON.stringify(commentsDB));
-    return modelComments;
+    const allClients: ClientModel[] = JSON.parse(JSON.stringify(clients));
+    return allClients;
   }
 
   async deleteClient(id: string): Promise<void> {
     await this.clientRepository.delete({ id: id });
+  }
+
+  getCurrentHighscore(): HighscoreModel {
+    console.log('currentHighscore = ', this.currentHighscore);
+    return this.currentHighscore;
   }
 }

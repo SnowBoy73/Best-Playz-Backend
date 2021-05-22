@@ -1,5 +1,6 @@
 import { ClientModel } from '../models/client.model';
 import { CommentModel } from '../models/comment.model';
+import { HighscoreModel } from "../models/highscore.model";
 
 export const ICommentServiceProvider = 'ICommentServiceProvider';
 export interface ICommentService {
@@ -9,7 +10,9 @@ export interface ICommentService {
 
   getClients(): Promise<ClientModel[]>;
 
-  getComments(): Promise<CommentModel[]>;
+  getComments(highscore: HighscoreModel): Promise<CommentModel[]>;
 
   deleteClient(id: string): Promise<void>;
+
+  getCurrentHighscore(): HighscoreModel;
 }
