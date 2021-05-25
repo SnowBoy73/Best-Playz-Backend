@@ -5,9 +5,21 @@ import { ClientEntity } from "../../infrastructure/data-source/entities/client.e
 import { Repository } from "typeorm";
 import { CommentEntity } from '../../infrastructure/data-source/entities/comment.entity';
 import { ClientModel } from "../models/client.model";
+import { Subject } from "rxjs";
+import { HighscoreModel } from "../models/highscore.model";
 
 @Injectable()
 export class SharedService implements ISharedService {
+
+  newHighScoreSubject = new Subject<HighscoreModel>();
+
+  getForNewHighScoreListener(): Subject<HighscoreModel> {
+    return this.newHighScoreSubject;
+  }
+
+  newHighScore(highscore: HighscoreModel) {
+    this.newHighScoreSubject.next(highscore);
+  }
 
   generateDateTimeNowString(): string {
     const ts = Date.now();

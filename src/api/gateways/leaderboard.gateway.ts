@@ -16,13 +16,22 @@ import {
 } from '../../core/primary-ports/leaderboard.service.interface';
 import { HighscoreDto } from '../dtos/highscore.dto';
 import { HighscoreModel } from '../../core/models/highscore.model';
+import { Subject } from "rxjs";
+import { SharedService } from "../../core/services/shared.service";
+import { ISharedServiceProvider } from "../../core/primary-ports/shared.service.interface";
 
 @WebSocketGateway()
 export class LeaderboardGateway {
   constructor(
     @Inject(ILeaderboardServiceProvider)
     private leaderboardService: ILeaderboardService,
-  ) {}
+    @Inject(ISharedServiceProvider)
+    private shared: SharedService,
+  ) {
+    this.shared.getForNewHighScoreListener().subscribe(hs => {
+      this.server.emit('newHighscore', hs);
+    });
+  }
   @WebSocketServer() server;
 
   @SubscribeMessage('postHighscore')

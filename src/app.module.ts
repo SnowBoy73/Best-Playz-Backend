@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { CommentModule } from './api/comment.module';
-import { CommentService } from './core/services/comment.service';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './infrastructure/data-source/postgres/database.module';
 import { LeaderboardModule } from './api/leaderboard.module';
-import { LeaderboardService } from './core/services/leaderboard.service';
 import * as Joi from '@hapi/joi';
 import { SharedService } from './core/services/shared.service';
+import { HighscoreController } from './api/controllers/highscore.controller';
 
 @Module({
   imports: [
@@ -24,11 +23,10 @@ import { SharedService } from './core/services/shared.service';
     }),
     DatabaseModule,
   ],
-  controllers: [],
+  // controllers: [HighscoreController],
   providers: [
-    // CommentService,  // NOT needed - kills DI!
-    // LeaderboardService,  // NOT needed - kills DI!
-    SharedService, // needed??
+    SharedService,
+    LeaderboardModule, //
   ],
 })
 export class AppModule {}
