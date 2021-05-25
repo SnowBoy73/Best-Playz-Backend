@@ -1,6 +1,6 @@
 import { ClientModel } from '../models/client.model';
 import { CommentModel } from '../models/comment.model';
-import { HighscoreModel } from "../models/highscore.model";
+import { HighscoreModel } from '../models/highscore.model';
 
 export const ICommentServiceProvider = 'ICommentServiceProvider';
 export interface ICommentService {
