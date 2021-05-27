@@ -6,7 +6,7 @@ pipeline {
             //echo "===REQUIRED: building the API==="
              sh "npm install"
              sh "npm run build"
-            // sh "docker build . -t nadiamiteva/best-playz-backend_app"
+             sh "docker build . -t nadiamiteva/best-playz-backend_app"
             }
         }
         stage("Deliver") {
