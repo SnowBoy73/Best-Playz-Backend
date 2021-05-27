@@ -19,6 +19,7 @@ import { HighscoreEntity } from '../entities/highscore.entity';
         database: configService.get('POSTGRES_DB'),
         entities: [ClientEntity, CommentEntity, HighscoreEntity],
         synchronize: true, //true for DEV, but deletes data if DB is shutdown, // false for PRODUCTION
+        /*  // Remove '/*' here to deploy!! MUT IMPORTANTÉ !!!
         ssl: true, // New from Lars
         extra: {
           ssl: {
