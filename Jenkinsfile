@@ -6,14 +6,14 @@ pipeline {
             //echo "===REQUIRED: building the API==="
              sh "npm install"
              sh "npm run build"
-             sh "docker build . -t nadiamiteva/best-playz-backend_app:${BUILD_NUMBER}"
+             sh "docker build . -t nadiamiteva/best-playz-backend"
             }
         }
         stage("Deliver") {
             steps {
                 // echo "===== REQUIRED: Will deliver the API to Docker Hub ====="
 					sh 'docker login -u ${USERNAME} -p ${PASSWORD}'
-					sh "docker push nadiamiteva/best-playz-backend_app:${BUILD_NUMBER}"
+					sh "docker push nadiamiteva/best-playz-backend_app"
             }
         }
         stage("Release staging environment") {
